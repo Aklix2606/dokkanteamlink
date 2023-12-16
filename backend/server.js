@@ -1,8 +1,8 @@
 import express from 'express';
-import userRoutes from './routes/userRoutes';
-import characterRoutes from './routes/characterRoutes';
-import teamRoutes from './routes/teamRoutes';
-import { connectDB } from './utils/connectDB';
+import userRoutes from './routes/userRoutes.js';
+import characterRoutes from './routes/characterRoutes.js';
+import teamsRoutes from './routes/teamsRoutes.js';
+import {connectDB} from './utils/connectDB.js';
 
 const app = express();
 
@@ -15,7 +15,7 @@ app.use(express.json());
 // Use the router for all routes defined above
 app.use('/user', userRoutes);
 app.use('/', characterRoutes);
-app.use('/user', teamRoutes);
+app.use('/user', teamsRoutes);
 
 //Connect to DB
 connectDB();

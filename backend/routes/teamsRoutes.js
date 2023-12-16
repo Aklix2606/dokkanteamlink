@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { getTeams, postTeams, putTeams, deleteTeams } from '../controllers/teamController';
+import { getTeams, postTeams, putTeams, deleteTeams } from '../controllers/teamsController.js';
 
-const router = Router();
+const teamsRoutes = Router();
 
-router.get('/teams', getTeams);
-router.post('/teams', postTeams);
-router.put('/teams/:id', putTeams);
-router.delete('/teams/:id', deleteTeams);
+teamsRoutes.get('/teams', getTeams);
+teamsRoutes.post('/teams', postTeams);
+teamsRoutes.put('/teams/:id', putTeams);
+teamsRoutes.delete('/teams/:id', deleteTeams);
   
-export default router;
+export default teamsRoutes;

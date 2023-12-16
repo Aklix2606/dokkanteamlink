@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { getCharacter } from '../controllers/characterController';
-const router = Router();
+import { getCharacter } from '../controllers/characterController.js';
+
+const characterRoutes = Router();
 
 // RESTful API endpoints for characters
-router.get('/characters', getCharacter);
+characterRoutes.get('/characters', getCharacter);
 
-export default router;
+export default characterRoutes;
