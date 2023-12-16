@@ -1,65 +1,25 @@
-const express = require('express');
-const next = require('next');
+import express from 'express';
+import userRoutes from './routes/userRoutes';
+import characterRoutes from './routes/characterRoutes';
+import teamRoutes from './routes/teamRoutes';
+import { connectDB } from './utils/connectDB';
 
-const dev = process.env.NODE_ENV !== 'production';
-const app = next({ dev });
-const handle = app.getRequestHandler();
+const app = express();
 
-app.prepare().then(() => {
-  const server = express();
+const port = 3000;
 
-  // Tu configuración personalizada del servidor aquí
+// Middleware to parse JSON in requests
+app.use(express.json());
 
-  server.all('*', (req, res) => {
-    return handle(req, res);
-  });
+// Use the router for all routes defined above
+app.use('/user', userRoutes);
+app.use('/', characterRoutes);
+app.use('/user', teamRoutes);
 
-  const PORT = process.env.PORT || 3000;
-  server.listen(PORT, (err) => {
-    if (err) throw err;
-    console.log(`> Ready on http://localhost:${PORT}`);
-  });
+//Connect to DB
+connectDB();
+
+// Start the server
+app.listen(port, () => {
+  console.log(`Server is running at http://localhost:${port}`);
 });
-
-
-
-
-
-
-/*const { MongoClient, ServerApiVersion } = require('mongodb');
-require('dotenv').config();
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(process.env.MONGODB_URL, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
-
-// Función para conectar a la base de datos
-async function connectToDatabase() {
-    try {
-        await client.connect();
-        console.log("Conectado a MongoDB");
-        return client.db(); // Devuelve la instancia de la base de datos conectada
-    } catch (error) {
-        console.error("Error de conexión a MongoDB:", error);
-        throw error;
-    }
-}
-
-// Función para cerrar la conexión
-async function closeDatabaseConnection() {
-    try {
-        await client.close();
-        console.log("Conexión a MongoDB cerrada");
-    } catch (error) {
-        console.error("Error al cerrar la conexión a MongoDB:", error);
-    }
-}
-
-module.exports = {
-    connectToDatabase,
-    closeDatabaseConnection,
-};*/
