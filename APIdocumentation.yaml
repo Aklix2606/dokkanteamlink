@@ -1,0 +1,347 @@
+openapi: 3.0.3
+info:
+  title: DokkanLinkTeam
+  description: |-
+    DokkanLinkTeam API, this API gives all the information needed to retrieve all characters form the mobile game Dragon Ball Z: Dokkan Battle. You can also retrieve a Team for a given user and create or get users.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Development server
+  - url: http://dokkanlinkteam.com
+    description: Production server
+
+tags:
+  - name: user
+    description: Operations about user
+  - name: character
+    description: Operations about character
+  - name: team
+    description: Operations about team
+
+paths:
+  # User routes
+  /users:
+    get:
+      tags:
+        - user
+      summary: Retrieves a list of all users
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      tags:
+        - user
+      summary: Creates a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: User created
+
+  /users/{id}:
+    get:
+      tags:
+        - user
+      summary: Retrieves a specific user
+      description: Returns the details of a user based on the user ID.
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the user
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Details of the user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+
+    put:
+      tags:
+        - user
+      summary: Updates an existing user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User updated
+        '404':
+          description: User not found
+    delete:
+      tags:
+        - user
+      summary: Deletes an existing user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: User deleted
+        '404':
+          description: User not found
+
+  # Character routes
+  /characters:
+    get:
+      tags:
+        - character
+      summary: Retrieves a list of all characters
+      responses:
+        '200':
+          description: List of characters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Character'
+                  
+  /characters/{id}:
+    get:
+      tags:
+        - character
+      summary: Retrieves a specific character
+      description: Returns the details of a character based on the character ID.
+      operationId: getCharacterById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the character
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Details of the character
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Character'
+        '404':
+          description: Character not found
+
+  /teams:
+    get:
+      tags:
+        - team
+      summary: Retrieves a list of all teams
+      description: Returns a list of all teams in the database.
+      operationId: getAllTeams
+      responses:
+        '200':
+          description: A list of teams
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+    post:
+      tags:
+        - team
+      summary: Creates a new team
+      description: Adds a new team with the given name to the database.
+      operationId: createTeam
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+      responses:
+        '201':
+          description: Team created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+                
+  /teams/{id}:
+    get:
+      tags:
+        - team
+      summary: Retrieves a specific team
+      description: Returns the details of a team based on the team ID.
+      operationId: getTeamById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the team
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Details of the team
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '404':
+          description: Team not found
+    delete:
+      tags:
+        - team
+      summary: Deletes an existing team
+      description: Deletes a team, but only if the request comes from the user who owns the team.
+      operationId: deleteTeam
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the team
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Team successfully deleted
+        '403':
+          description: Forbidden - User not authorized to delete this team
+        '404':
+          description: Team not found
+
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        teams:
+          type: array
+          items:
+            $ref: '#/components/schemas/Team'
+
+    Character:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        title:
+          type: string
+        maxLevel:
+          type: integer
+        maxSALevel:
+          type: integer
+        rarity:
+          type: string
+        class:
+          type: string
+        type:
+          type: string
+        cost:
+          type: integer
+        id:
+          type: string
+        imageURL:
+          type: string
+        leaderSkill:
+          type: string
+        superAttack:
+          type: string
+        ultraSuperAttack:
+          type: string
+        passive:
+          type: string
+        links:
+          type: array
+          items:
+            type: string
+        categories:
+          type: array
+          items:
+            type: string
+        kiMeter:
+          type: array
+          items:
+            type: string
+        baseHP:
+          type: integer
+        maxLevelHP:
+          type: integer
+        freeDupeHP:
+          type: integer
+        rainbowHP:
+          type: integer
+        baseAttack:
+          type: integer
+        maxLevelAttack:
+          type: integer
+        freeDupeAttack:
+          type: integer
+        rainbowAttack:
+          type: integer
+        baseDefence:
+          type: integer
+        maxDefence:
+          type: integer
+        freeDupeDefence:
+          type: integer
+        rainbowDefence:
+          type: integer
+        kiMultiplier:
+          type: string
+        transformations:
+          type: array
+          items:
+            type: string
+
+    Team:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/Character'
+
