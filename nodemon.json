@@ -1,0 +1,7 @@
+{
+    "watch": ["backend/", "pages/", "components/"],
+    "ignore": ["node_modules/"],
+    "exec": "node ./backend/server.js",
+    "ext": "js,json,tsx,ts,html,css,scss"
+}
+  

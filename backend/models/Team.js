@@ -11,11 +11,11 @@ const teamSchema = new Schema({
         ref: 'Character'
     }],
     // Reference to the User model
-    userId: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    }
+    // userId: {
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'User',
+    //     required: true
+    // }
 });
 
 const Team = model('Team', teamSchema);

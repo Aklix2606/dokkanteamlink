@@ -20,6 +20,7 @@ export async function postTeams(req, res) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }
+
 export async function putTeams(req, res) {
   const teamId = req.params.id;
   const { name, members } = req.body;
