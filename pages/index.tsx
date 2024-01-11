@@ -5,7 +5,6 @@ export default function Home() {
   const [users, setUsers] = useState([]);
   const [characters, setCharacters] = useState([]);
   const [teams, setTeams] = useState([]);
-  const [teamId, setTeamId] = useState('');
 
   useEffect(() => {
     // Fetch Users
@@ -41,13 +40,13 @@ export default function Home() {
       <ul>
         {users.map(user => <li key={user.id}>{user.name}</li>)}
       </ul>
-      <h2>Characters</h2>
-      <ul>
-        {characters.map(character => <li key={character.id}>{character.name}</li>)}
-      </ul>
       <h2>Teams</h2>
       <ul>
         {teams.map(team => <li key={team.id}>{team.name}</li>)}
+      </ul>
+      <h2>Characters</h2>
+      <ul>
+        {characters.map(character => <li key={character.id}>{character.name}</li>)}
       </ul>
     </div>
   );
