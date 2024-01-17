@@ -1,5 +1,5 @@
 import React from 'react';
-import Image from "next/legacy/image";
+import Image from "next/image";
 
 // Assuming you have a Character interface defined elsewhere
 import { Character } from '../components/utils/Character';
@@ -16,9 +16,11 @@ interface CharacterDisplayProps {
             <Image
               src={character.imageURL}
               alt={character.name}
-              layout='fill'
-              objectFit='cover'
-            />
+              fill
+              sizes="100vw"
+              style={{
+                objectFit: "cover"
+              }} />
           </div>
           <p>Title: {character.title}</p>
           <p>Rarity: {character.rarity}</p>
