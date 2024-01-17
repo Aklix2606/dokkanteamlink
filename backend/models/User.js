@@ -1,5 +1,6 @@
 import { Schema as _Schema, model } from 'mongoose';
 
+
 const Schema = _Schema;
 
 const userSchema = new Schema({
@@ -18,6 +19,14 @@ const userSchema = new Schema({
     ref: 'Team'
   }]
 });
+
+userSchema.pre('save', async function (next) {
+  if (this.isModified('password')) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+  next();
+});
+
 
 const User = model('User', userSchema);
 

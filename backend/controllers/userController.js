@@ -60,29 +60,23 @@ export async function updateUser(req, res) {
 }
 
 export async function postUser(req, res) {
-  const { username, password, teamIds = []} = req.body;
+  const { username, password } = req.body;
 
   try {
-    // Generar un salt y hashear la contraseña
-    const salt = await genSalt(saltRounds);
-    const hashedPassword = await hash(password, salt);
-    const teams = teamIds.map(id => mongoose.Types.ObjectId(id));
-
-    // Create a new User document and save it to the database
     const newUser = new User({
-      username: username,
-      password: hashedPassword,
-      teams: teams
+      username,
+      password, // No need to hash here, as it's handled by the pre-save hook
+      teams: [] // Assuming teams is an array of team IDs
     });
 
     await newUser.save();
-
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+
 
 export async function deleteUser(req, res) {
   const { userId } = req.params;

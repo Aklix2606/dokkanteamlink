@@ -20,7 +20,7 @@ app.prepare().then(() => {
   server.use('/api', userRoutes);
   server.use('/api', characterRoutes);
   server.use('/api', teamsRoutes);
-
+  
   server.all('*', (req, res) => {
     return handle(req, res);
   });

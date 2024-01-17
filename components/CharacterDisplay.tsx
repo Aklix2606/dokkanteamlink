@@ -14,14 +14,12 @@ interface CharacterDisplayProps {
           <h2>{character.name}</h2>
           <div style={{ width: '200px', height: '200px', position: 'relative' }}>
             <Image
-              src={character.imageURL}
-              alt={character.name}
-              fill
-              sizes="100vw"
-              style={{
-                objectFit: "cover"
-              }} />
-          </div>
+                src={character.imageURL}
+                alt={character.name}
+                width={200} // Specify width
+                height={200} // Specify height
+            />
+        </div>
           <p>Title: {character.title}</p>
           <p>Rarity: {character.rarity}</p>
           <p>Class: {character.class}</p>
@@ -31,15 +29,14 @@ interface CharacterDisplayProps {
           <p>Super Attack: {character.superAttack}</p>
           <p>Ultra Super Attack: {character.ultraSuperAttack}</p>
           <p>Passive: {character.passive}</p>
-          <p>Links: {character.links.join(', ')}</p>
-          <p>Categories: {character.categories.join(', ')}</p>
-          <p>Ki Meter: {character.kiMeter.join(', ')}</p>
+          <p>Links: {character.links?.join(', ')}</p>
+          <p>Categories: {character.categories?.join(', ')}</p>
+          <p>Ki Meter: {character.kiMeter?.join(', ')}</p>
           <p>HP: {character.baseHP} - {character.rainbowHP}</p>
           <p>Attack: {character.baseAttack} - {character.rainbowAttack}</p>
           <p>Defence: {character.baseDefence} - {character.rainbowDefence}</p>
           <p>Ki Multiplier: {character.kiMultiplier}</p>
-          <p>Transformations: {character.transformations.join(', ')}</p>
-          {/* Add more fields as needed */}
+          <p>Transformations: {character.transformations?.join(', ')}</p>
         </div>
       );
   };
