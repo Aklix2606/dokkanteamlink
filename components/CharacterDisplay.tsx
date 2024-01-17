@@ -1,5 +1,5 @@
 import React from 'react';
-import Image from 'next/image';
+import Image from "next/legacy/image";
 
 // Assuming you have a Character interface defined elsewhere
 import { Character } from '../components/utils/Character';
