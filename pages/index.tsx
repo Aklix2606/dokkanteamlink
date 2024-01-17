@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import apiRequest from '../backend/utils/apiUtils';
+import Layout from '../components/Layout';
+import {GlobalStyle} from '../components/utils/GlobalStyle';
+
 
 export default function Home() {
   const [users, setUsers] = useState([]);
@@ -34,20 +37,11 @@ export default function Home() {
   };
 
   return (
-    <div>
-      <h1>API Data</h1>
-      <h2>Users</h2>
-      <ul>
-        {users.map(user => <li key={user.id}>{user.name}</li>)}
-      </ul>
-      <h2>Teams</h2>
-      <ul>
-        {teams.map(team => <li key={team.id}>{team.name}</li>)}
-      </ul>
-      <h2>Characters</h2>
-      <ul>
-        {characters.map(character => <li key={character.id}>{character.name}</li>)}
-      </ul>
-    </div>
+    <>
+      <GlobalStyle/>
+      <Layout>
+          <h1>API Data</h1>
+      </Layout>
+    </>
   );
 }

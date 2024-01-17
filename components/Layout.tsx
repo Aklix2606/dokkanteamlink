@@ -1,82 +1,41 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
+import React from 'react';
+import { useRouter } from 'next/router';
+import AppBar from '@mui/material/AppBar';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-
-function samePageLinkNavigation(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
-  if (
-    event.defaultPrevented ||
-    event.button !== 0 ||
-    event.metaKey ||
-    event.ctrlKey ||
-    event.altKey ||
-    event.shiftKey
-  ) {
-    return false;
-  }
-  return true;
-}
-
-interface LinkTabProps {
-  label?: string;
-  href?: string;
-  selected?: boolean;
-}
-
-function LinkTab(props: LinkTabProps) {
-  const { label, href, selected, ...otherProps } = props;
-
-  return (
-    <Tab
-      label={label}
-      component="a"
-      href={href}
-      onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-        if (samePageLinkNavigation(event)) {
-          event.preventDefault();
-        }
-      }}
-      {...(selected ? { 'aria-current': 'page' } : {})}
-      {...otherProps}
-    />
-  );
-}
-
+import Toolbar from '@mui/material/Toolbar';
+import Link from 'next/link';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
-export default function Layout({ children }: LayoutProps) {
-  const [value, setValue] = React.useState(0);
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const router = useRouter();
+  const routes = [
+    { label: 'Home', path: '/' },
+    { label: 'Characters', path: '/characters' },
+    { label: 'Teams', path: '/teams' },
+    // Add additional routes here
+  ];
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    if (
-      event.type !== 'click' ||
-      (event.type === 'click' &&
-        samePageLinkNavigation(
-          event as React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-        ))
-    ) {
-      setValue(newValue);
-    }
-  };
+  // Determine the active tab based on the current route
+  const activeTab = routes.findIndex(route => route.path === router.pathname);
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Tabs
-        value={value}
-        onChange={handleChange}
-        aria-label="nav tabs example"
-        role="navigation"
-      >
-        <LinkTab label="Page One" href="/page-one" />
-        <LinkTab label="Page Two" href="/about" />
-        <LinkTab label="Page Three" href="/api/users" />
-      </Tabs>
-      <Box sx={{ marginTop: 2 }}>
-        {children}
-      </Box>
-    </Box>
+    <div> 
+      <AppBar position="static" style={{ backgroundColor: '#1A1A1A' }}>
+        <Toolbar>
+          <Tabs aria-label="Navigation Tabs" value={activeTab === -1 ? false : activeTab}>
+            {routes.map((route, index) => (
+              <Tab style={{ color: '#FDB750' }} label={route.label} component={Link} href={route.path} key={index} />
+            ))}
+          </Tabs>
+        </Toolbar>
+      </AppBar>
+      {children}
+    </div>
   );
-}
+};
+
+export default Layout;
