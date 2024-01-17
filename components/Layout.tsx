@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRouter } from 'next/router';
+import useRouter from 'next/router';
 import AppBar from '@mui/material/AppBar';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
