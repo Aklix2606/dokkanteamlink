@@ -1,6 +1,7 @@
 import {genSalt, hash} from 'bcrypt';
 import User from '../models/User.js';
 import mongoose from 'mongoose';
+import Team from '../models/Team.js';
 
 const saltRounds = 10;
 
@@ -8,7 +9,7 @@ export async function getUserById(req, res) {
   const { userId } = req.params;
 
   try {
-    // Validate if the provided ID is a valid MongoDB ObjectId
+    
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
@@ -65,17 +66,19 @@ export async function postUser(req, res) {
   try {
     const newUser = new User({
       username,
-      password, // No need to hash here, as it's handled by the pre-save hook
-      teams: [] // Assuming teams is an array of team IDs
+      password,
+      teams: []
     });
 
     await newUser.save();
-    res.status(201).json({ message: 'User registered successfully' });
+
+    res.status(201).json({ message: 'User registered successfully', user: newUser });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+
 
 
 export async function deleteUser(req, res) {
@@ -95,3 +98,44 @@ export async function deleteUser(req, res) {
   }
 }
   
+export async function updateUserTeams(req, res) {
+  const userId = req.params.userId;
+  const { name, members, teamId } = req.body; 
+
+  try {
+    let team;
+
+    if (teamId) {
+      team = await Team.findOneAndUpdate({ _id: teamId, owner: userId }, { name, members }, { new: true });
+      if (!team) {
+        return res.status(404).json({ error: 'Team not found or unauthorized' });
+      }
+    } else {
+      team = new Team({ name, members, owner: userId }); 
+      await team.save();
+      
+      
+      await User.findByIdAndUpdate(userId, { $addToSet: { teams: team._id } }, { new: true });
+    }
+
+    res.json({ message: 'Team updated successfully', team });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+
+export async function getCurrentUser(req, res) {
+  const userId = req.userId; 
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json(user); 
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}

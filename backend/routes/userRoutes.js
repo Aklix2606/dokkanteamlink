@@ -1,17 +1,12 @@
 import { Router } from 'express';
-import {getUserById, postUser, deleteUser, updateUser} from '../controllers/userController.js';
+import { postUser, updateUserTeams, getCurrentUser} from '../controllers/userController.js';
 import {  loginUser, verifyToken } from '../controllers/authController.js';
 
 const userRoutes = Router();
 
 userRoutes.post('/login', loginUser);
 userRoutes.post('/register', postUser);
-userRoutes.delete('/deleteaccount/:userId', deleteUser);
-userRoutes.put('/updateaccount/:userId', updateUser);
+userRoutes.put('/users/:userId/teams', verifyToken, updateUserTeams);
+userRoutes.get('/users/me', verifyToken, getCurrentUser);
 
-
-
-  
-
-  
 export default userRoutes;

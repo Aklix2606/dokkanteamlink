@@ -3,11 +3,13 @@ import React, { useState, FormEvent } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../components/Layout';
 import { GlobalStyle } from '../components/utils/GlobalStyle';
+import { useAuth } from '../components/context/authContext';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -22,12 +24,9 @@ const LoginPage: React.FC = () => {
   
       const data = await response.json();
       if (response.ok) {
-        // Handle successful login
-        // You can store the token in localStorage/sessionStorage and redirect
-        localStorage.setItem('token', data.token);
-        router.push('/'); // Redirect to home or dashboard
+        login(data.token); 
+        router.push('/'); 
       } else {
-        // Handle errors, show messages to user
         console.error(data.error);
       }
     } catch (error) {

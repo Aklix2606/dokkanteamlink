@@ -12,7 +12,9 @@ const CharacterList: React.FC<CharacterListProps> = ({ characters, onSelectChara
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
 
-  
+  const handleCategorySelect = (category: string | null) => {
+    setSelectedCategory(category || '');
+  };
 
   const filteredCharacters = characters.filter(character =>
     character.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
@@ -28,12 +30,12 @@ const CharacterList: React.FC<CharacterListProps> = ({ characters, onSelectChara
         onChange={(e) => setSearchQuery(e.target.value)}
         style={{ marginBottom: '10px', padding: '5px', width: '200px' }}
       />
-      <ComboBox />
+      <ComboBox onCategorySelect={handleCategorySelect}/>
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', // Responsive grid with max 5 columns
+        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
         gridGap: '50px',
-        maxWidth: '1000px', // Adjust this based on your design
+        maxWidth: '1000px', 
         margin: 'auto',
       }}>
         {filteredCharacters.length > 0 ? (

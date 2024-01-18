@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from "next/image";
 
-// Assuming you have a Character interface defined elsewhere
+
 import { Character } from '../components/utils/Character';
 
 interface CharacterDisplayProps {
@@ -16,8 +16,8 @@ interface CharacterDisplayProps {
             <Image
                 src={character.imageURL}
                 alt={character.name}
-                width={200} // Specify width
-                height={200} // Specify height
+                width={200} 
+                height={200} 
             />
         </div>
           <p>Title: {character.title}</p>

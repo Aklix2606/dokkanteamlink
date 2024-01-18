@@ -1,15 +1,10 @@
 import { Router } from 'express';
-import { getTeams, postTeams, putTeams, deleteTeams } from '../controllers/teamsController.js';
+import { getTeams, deleteTeam } from '../controllers/teamsController.js';
+import { verifyToken } from '../controllers/authController.js';
 
 const teamsRoutes = Router();
 
-teamsRoutes.get('/teams', getTeams);
-teamsRoutes.post('/teams', postTeams);
-teamsRoutes.put('/teams/:id', putTeams);
-teamsRoutes.delete('/teams/:id', deleteTeams);
-
-teamsRoutes.get('/protected', verifyToken, (req, res) => {
-    res.json({ message: 'Accessed protected route' });
-});
+teamsRoutes.get('/teams', verifyToken, getTeams);
+teamsRoutes.delete('/teams/:teamId', verifyToken, deleteTeam);
   
 export default teamsRoutes;

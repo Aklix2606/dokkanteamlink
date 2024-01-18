@@ -1,4 +1,5 @@
 import { Schema as _Schema, model } from 'mongoose';
+import bcrypt from 'bcrypt'; 
 
 
 const Schema = _Schema;

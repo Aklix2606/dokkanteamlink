@@ -21,10 +21,8 @@ const SignUpPage: React.FC = () => {
       });
   
       if (response.ok) {
-        // Handle successful registration
-        router.push('/login'); // Redirect to login page
+        router.push('/login');
       } else {
-        // Handle errors, show messages to user
         console.error('Sign up error');
       }
     } catch (error) {

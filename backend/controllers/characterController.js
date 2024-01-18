@@ -14,7 +14,7 @@ export async function getCharacter(req, res) {
 export async function getCharacterById(req, res) {
   const { characterId } = req.params;
 
-  // Check if the provided ID is a valid MongoDB ObjectId
+  
   if (!mongoose.Types.ObjectId.isValid(characterId)) {
     return res.status(400).json({ error: 'Invalid character ID' });
   }

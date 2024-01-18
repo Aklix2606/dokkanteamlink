@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 
-// Define Mongoose schemas and models
+
 const CharacterSchema = new Schema({
     _id: Schema.Types.ObjectId,
     name: String,
