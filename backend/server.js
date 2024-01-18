@@ -5,6 +5,7 @@ import characterRoutes from './routes/characterRoutes.js';
 import teamsRoutes from './routes/teamsRoutes.js';
 import {connectDB} from './utils/connectDB.js';
 import dotenv from 'dotenv';
+import cors from 'cors';
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -15,7 +16,10 @@ dotenv.config();
 connectDB();
 app.prepare().then(() => {
   const server = express();
-
+  server.use(cors({
+    origin: 'http://localhost:3000',
+    methods: 'GET,POST,PUT,DELETE' 
+  }));
   server.use(express.json());
   server.use('/api', userRoutes);
   server.use('/api', characterRoutes);

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { postUser, updateUserTeams, getCurrentUser} from '../controllers/userController.js';
-import {  loginUser, verifyToken } from '../controllers/authController.js';
+import { loginUser, verifyToken } from '../controllers/authController.js';
 
 const userRoutes = Router();
 
