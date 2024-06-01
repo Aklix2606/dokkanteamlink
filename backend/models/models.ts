@@ -52,14 +52,14 @@ export interface Component {
 }
 
 // Tabla: personatjeequipocat
-export interface Personatjeequipocat {
+export interface Personatgeinvocat {
     correu: string;
     nom: string;
     numobj: number;
 }
 
-// Tabla: android
-export interface Android {
+// Tabla: androide
+export interface Androide {
     nom: string;
     quantitat: number;
 }

@@ -1,75 +1,100 @@
 import React, { useState } from 'react';
-import Image from 'next/image';
-import { Character } from '../components/utils/Character';
-import ComboBox from './AutoComplete';
+import { Personatge } from '../backend/models/models';
+import Button from '@mui/material/Button';
+import Modal from '@mui/material/Modal';
+import { styled } from '@mui/system';
+
+const StyledButton = styled(Button)({
+    backgroundColor: '#f0f0f0',
+    borderRadius: '5px',
+    padding: '10px',
+    width: '100%',
+    textAlign: 'left',
+    textTransform: 'none',
+    '&:hover': {
+        backgroundColor: '#e0e0e0',
+    },
+});
+
+const CharacterStatsContainer = styled('div')({
+    color: '#000', // Cambiar el color del texto a negro
+});
 
 type CharacterListProps = {
-  characters: Character[];
-  onSelectCharacter: (character: Character) => void;
+    characters: Personatge[];
 };
 
-const CharacterList: React.FC<CharacterListProps> = ({ characters, onSelectCharacter }) => {  
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+const CharacterList: React.FC<CharacterListProps> = ({ characters }) => {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCharacter, setSelectedCharacter] = useState<Personatge | null>(null);
+    const [isLoadingStats, setIsLoadingStats] = useState(false);
+    const [characterStats, setCharacterStats] = useState<any | null>(null);
 
-  const handleCategorySelect = (category: string | null) => {
-    setSelectedCategory(category || '');
-  };
+    const handleCharacterClick = async (character: Personatge) => {
+        setSelectedCharacter(character);
+        setIsLoadingStats(true);
+        try {
+            const response = await fetch(`/api/personatge/stats/${character.nom}`);
+            const data = await response.json();
+            setCharacterStats(data);
+            setIsLoadingStats(false);
+        } catch (error) {
+            setIsLoadingStats(false);
+            console.error('Error fetching character stats:', error);
+        }
+    };
 
-  const filteredCharacters = characters.filter(character =>
-    character.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-    (selectedCategory === '' || character.categories.includes(selectedCategory))
-  );
+    const handleCloseModal = () => {
+        setSelectedCharacter(null);
+        setCharacterStats(null);
+    };
 
-  return (
-    <div>
-      <input 
-        type="text"
-        placeholder="Search characters..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        style={{ marginBottom: '10px', padding: '5px', width: '200px' }}
-      />
-      <ComboBox onCategorySelect={handleCategorySelect}/>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-        gridGap: '50px',
-        maxWidth: '1000px', 
-        margin: 'auto',
-      }}>
-        {filteredCharacters.length > 0 ? (
-          filteredCharacters.map((character) => (
-            <button 
-              key={character._id}
-              onClick={() => onSelectCharacter(character)}
-              style={{ 
-                position: 'relative', 
-                width: '100%', 
-                height: '250px',
-                backgroundColor: 'transparent', 
-                border: 'none', 
-                cursor: 'pointer',
-                padding: 0,
-              }}
-            >
-              <Image
-                src={character.imageURL}
-                alt={character.name}
-                width={200}
-                height={200}
-              />
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'DarkGoldenRod', color: 'white', padding: '5px' }}>
-                {character.name}
-              </div>
-            </button>
-          ))
-        ) : (
-          <p>No characters found</p>
-        )}
-      </div>
-    </div>
-  );
+    return (
+        <div>
+            <input
+                type="text"
+                placeholder="Search characters..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{ marginBottom: '10px', padding: '5px', width: '200px' }}
+            />
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                gridGap: '20px',
+            }}>
+                {characters.map((character) => (
+                    <StyledButton key={character.nom} onClick={() => handleCharacterClick(character)}>
+                        {character.nom}
+                    </StyledButton>
+                ))}
+            </div>
+            <Modal open={selectedCharacter !== null} onClose={handleCloseModal}>
+                <div style={{ padding: '20px', backgroundColor: 'white', borderRadius: '5px', maxWidth: '400px', margin: 'auto', marginTop: '100px' }}>
+                    {selectedCharacter && (
+                        <>
+                            {isLoadingStats ? (
+                                <p>Loading character stats...</p>
+                            ) : (
+                                <>
+                                    {characterStats && (
+                                        <CharacterStatsContainer>
+                                            <h2>{selectedCharacter.nom}</h2>
+                                            <p>Tipus: {characterStats.tipus}</p>
+                                            <p>Vida: {characterStats.vida}</p>
+                                            <p>Atac: {characterStats.atac}</p>
+                                            <p>Defensa: {characterStats.defensa}</p>
+                                        </CharacterStatsContainer>
+                                    )}
+                                </>
+                            )}
+                        </>
+                    )}
+                    <Button onClick={handleCloseModal}>Close</Button>
+                </div>
+            </Modal>
+        </div>
+    );
 };
 
 export default CharacterList;

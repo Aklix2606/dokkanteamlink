@@ -1,12 +1,4 @@
-import { Pool } from 'pg';
-
-const pool = new Pool({
-    user: 'tu_usuario',
-    password: 'tu_contraseña',
-    host: 'tu_host',
-    port: 5432,
-    database: 'tu_basededatos',
-});
+import { pool } from '../utils/connectDB.js';  // Ajusta esta ruta según tu estructura de proyecto
 
 export async function getJugadorByEmail(req, res) {
     const { correu } = req.params;
@@ -28,15 +20,11 @@ export async function getJugadorByEmail(req, res) {
 
 export async function updateJugador(req, res) {
     const { correu } = req.params;
-    const { contrasenya, nom_gremi } = req.body;
+    const { nom_gremi } = req.body;
 
     try {
         const updateData = {};
         const updates = [];
-
-        if (contrasenya) {
-            return res.status(400).json({ error: 'Changing password is not allowed' });
-        }
 
         if (nom_gremi) {
             updateData.nom_gremi = nom_gremi;
@@ -92,3 +80,38 @@ export async function deleteJugador(req, res) {
     }
 }
 
+export async function updateJugadorGremi(req, res) {
+    const correu = req.params.correu;
+    const { nom_gremi } = req.body;
+
+    try {
+        const query = 'UPDATE practica.jugador SET nom_gremi = $1 WHERE correu = $2 RETURNING *';
+        const { rows } = await pool.query(query, [nom_gremi, correu]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Jugador not found' });
+        }
+
+        res.json({ message: 'Jugador gremi updated successfully', jugador: rows[0] });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+export async function getCurrentJugador(req, res) {
+    const correu = req.correu;
+
+    try {
+        const query = 'SELECT * FROM practica.jugador WHERE correu = $1';
+        const { rows, rowCount } = await pool.query(query, [correu]);
+
+        if (rowCount === 0) {
+            return res.status(404).json({ error: 'Jugador not found' });
+        }
+
+        res.json(rows[0]);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}

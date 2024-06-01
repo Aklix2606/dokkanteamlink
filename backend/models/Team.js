@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+/*import { Schema, model } from 'mongoose';
 
 const teamSchema = new Schema({
     name: {
@@ -18,4 +18,4 @@ const teamSchema = new Schema({
 
 const Team = model('Team', teamSchema);
 
-export default Team;
+export default Team;*/

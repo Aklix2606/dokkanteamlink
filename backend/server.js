@@ -1,9 +1,9 @@
 import express from 'express';
 import next from 'next';
-import userRoutes from './routes/userRoutes.js';
+import jugadorRoutes from './routes/jugadorRoutes.js';
 import characterRoutes from './routes/characterRoutes.js';
-import teamsRoutes from './routes/teamsRoutes.js';
-import {connectDB} from './utils/connectDB.js';
+//import teamsRoutes from './routes/teamsRoutes.js';
+import { connectDB } from './utils/connectDB.js';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
@@ -21,9 +21,9 @@ app.prepare().then(() => {
     methods: 'GET,POST,PUT,DELETE' 
   }));
   server.use(express.json());
-  server.use('/api', userRoutes);
+  server.use('/api', jugadorRoutes);
   server.use('/api', characterRoutes);
-  server.use('/api', teamsRoutes);
+  //server.use('/api', teamsRoutes);
   
   server.all('*', (req, res) => {
     return handle(req, res);

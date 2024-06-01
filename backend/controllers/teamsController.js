@@ -1,4 +1,4 @@
-import Team from '../models/Team.js';
+/*import Team from '../models/Team.js';
 import User from '../models/User.js';
 
 export async function getTeams(req, res) {
@@ -38,3 +38,4 @@ export async function deleteTeam(req, res) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }
+*/

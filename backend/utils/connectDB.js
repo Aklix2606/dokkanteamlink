@@ -1,15 +1,16 @@
 import pkg from 'pg';
+const { Pool } = pkg;
 import dotenv from 'dotenv';
 
 dotenv.config();
-const { Pool } = pkg;
+
 const pool = new Pool({
-    user: 'est_e7597461',
-    password: 'dB.e7597461',
-    host: 'ubiwan.epsevg.upc.edu',
-    port: 5432,
-    database: 'est_e7597461',
-})
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    database: process.env.DB_DATABASE,
+});
 
 export async function connectDB() {
     try {
@@ -19,3 +20,5 @@ export async function connectDB() {
         console.error('Failed to connect to the database:', error);
     }
 }
+
+export { pool }; // Exporta la variable 'pool' para que pueda ser importada en otros archivos

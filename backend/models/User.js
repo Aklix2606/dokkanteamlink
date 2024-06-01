@@ -1,4 +1,4 @@
-import { Schema as _Schema, model } from 'mongoose';
+/*import { Schema as _Schema, model } from 'mongoose';
 import bcrypt from 'bcrypt'; 
 
 
@@ -32,3 +32,4 @@ userSchema.pre('save', async function (next) {
 const User = model('User', userSchema);
 
 export default User;
+*/

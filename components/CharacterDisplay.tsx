@@ -1,4 +1,27 @@
+// CharacterDisplay.tsx
 import React from 'react';
+import { Personatge } from '../backend/models/models';
+
+
+interface CharacterDisplayProps {
+    character: Personatge;
+}
+
+const CharacterDisplay: React.FC<CharacterDisplayProps> = ({ character }) => {
+    return (
+        <div>
+            <h2>{character.nom}</h2>
+            <p>Tipus: {character.tipus}</p>
+            <p>Vida: {character.vida}</p>
+            <p>Atac: {character.atac}</p>
+            <p>Defensa: {character.defensa}</p>
+        </div>
+    );
+};
+
+export default CharacterDisplay;
+
+/*import React from 'react';
 import Image from "next/image";
 
 
@@ -42,3 +65,4 @@ interface CharacterDisplayProps {
   };
   
   export default CharacterDisplay;
+*/

@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+/*import { Schema, model } from 'mongoose';
 
 
 const CharacterSchema = new Schema({
@@ -38,4 +38,4 @@ const CharacterSchema = new Schema({
 
 const Character = model('Character', CharacterSchema, 'Characters');
 
-export default Character;
+export default Character;*/
