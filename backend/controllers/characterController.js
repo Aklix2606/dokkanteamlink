@@ -18,6 +18,30 @@ export async function getPersonatgeStatsByNom(req, res) {
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+export async function assignObjectToCharacter(req, res) {
+  const { nom, numobj } = req.body;
+  const correu = req.userId;
+
+  if (!nom || !numobj) {
+      return res.status(400).json({ error: 'Missing character name or object number' });
+  }
+
+  try {
+
+      // Asignar el objeto al personaje
+      const assignQuery = `
+          UPDATE practica.personatgeinvocat
+          SET numobj = $1
+          WHERE nom = $2 AND correu = $3
+      `;
+      await pool.query(assignQuery, [numobj, nom, correu]);
+
+      res.status(200).json({ message: 'Object assigned to character successfully' });
+  } catch (error) {
+      console.error('Error assigning object to character:', error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+}
 /*import Character from '../models/Character.js';
 
 export async function getCharacter(req, res) {

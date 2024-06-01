@@ -4,7 +4,7 @@ import CharacterList from '../components/CharacterList';
 import Layout from "../components/Layout";
 import { GlobalStyle } from "../components/utils/GlobalStyle";
 import { useAuth } from '../components/context/authContext';
-import { Personatge } from '../backend/models/models';
+import { Personatgeinvocat } from '../backend/models/models';
 import { useRouter } from 'next/router';
 
 const fetcher = (url: string) => {
@@ -21,10 +21,9 @@ export default function Characters() {
   const [isLoading, setIsLoading] = useState(true); // Estado para controlar la carga
   const [characterCount, setCharacterCount] = useState<number | null>(null); // Estado para almacenar el conteo de personajes
 
-  const { data: characters, error: charactersError } = useSWR<Personatge[]>('/api/personatgesinvocats', fetcher);
+  const { data: characters, error: charactersError } = useSWR<Personatgeinvocat[]>('/api/personatgesinvocats', fetcher);
   const { data: countData, error: countError } = useSWR('/api/personatgesinvocats/count', fetcher);
   const router = useRouter();
-  console.log(characters);
 
   // Verificar si el usuario está autenticado al cargar el componente
   useEffect(() => {
