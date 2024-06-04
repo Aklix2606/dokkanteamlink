@@ -5,8 +5,8 @@ import Layout from '../components/Layout';
 import { GlobalStyle } from '../components/utils/GlobalStyle';
 
 const SignUpPage: React.FC = () => {
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const [correu, setCorreu] = useState<string>('');
+  const [contrasenya, setContrasenya] = useState<string>('');
   const router = useRouter();
 
   const handleSubmit = async (e: FormEvent) => {
@@ -17,7 +17,7 @@ const SignUpPage: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ correu, contrasenya, nom_gremi: null }),
       });
   
       if (response.ok) {
@@ -29,34 +29,33 @@ const SignUpPage: React.FC = () => {
       console.error('Sign up error:', error);
     }
   };
-  
 
   return (
     <>
-        <GlobalStyle />
-        <Layout>
-            <form onSubmit={handleSubmit}>
-                <div>
-                <label htmlFor="username">Username</label>
-                <input
-                    id="username"
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-                </div>
-                <div>
-                <label htmlFor="password">Password</label>
-                <input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                </div>
-                <button type="submit">Sign Up</button>
-            </form>
-        </Layout>
+      <GlobalStyle />
+      <Layout>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="correu">Email</label>
+            <input
+              id="correu"
+              type="email"
+              value={correu}
+              onChange={(e) => setCorreu(e.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="contrasenya">Password</label>
+            <input
+              id="contrasenya"
+              type="password"
+              value={contrasenya}
+              onChange={(e) => setContrasenya(e.target.value)}
+            />
+          </div>
+          <button type="submit">Sign Up</button>
+        </form>
+      </Layout>
     </>
   );
 };

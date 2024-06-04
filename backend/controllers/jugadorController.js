@@ -48,12 +48,16 @@ export async function updateJugador(req, res) {
     }
 }
 
+// controllers/jugadorController.js
 export async function postJugador(req, res) {
     const { correu, contrasenya, nom_gremi } = req.body;
 
+    // Verificación de los datos recibidos
+    console.log('Received data:', { correu, contrasenya, nom_gremi });
+
     try {
         const query = 'INSERT INTO practica.jugador (correu, contrasenya, nom_gremi) VALUES ($1, $2, $3) RETURNING *';
-        const { rows } = await pool.query(query, [correu, contrasenya, nom_gremi]);
+        const { rows } = await pool.query(query, [correu, contrasenya, nom_gremi || null]);
 
         res.status(201).json({ message: 'Jugador registered successfully', jugador: rows[0] });
     } catch (error) {
@@ -61,6 +65,7 @@ export async function postJugador(req, res) {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+
 
 export async function deleteJugador(req, res) {
     const { correu } = req.params;
