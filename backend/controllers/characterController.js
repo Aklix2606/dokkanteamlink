@@ -1,5 +1,32 @@
 import { pool } from '../utils/connectDB.js';
+export async function invokeRandomCharacter(req, res) {
+  const correu = req.userId;
 
+  try {
+    // Obtener un personaje aleatorio de la tabla practica.personatge
+    const queryRandomCharacter = 'SELECT nom FROM practica.personatge ORDER BY RANDOM() LIMIT 1';
+    const { rows: characterRows } = await pool.query(queryRandomCharacter);
+
+    if (characterRows.length === 0) {
+      return res.status(404).json({ error: 'No characters available' });
+    }
+
+    const randomCharacter = characterRows[0].nom;
+
+    // Asignar el personaje al jugador
+    const assignQuery = `
+      INSERT INTO practica.personatgeinvocat (correu, nom)
+      VALUES ($1, $2)
+      ON CONFLICT (correu, nom) DO NOTHING
+    `;
+    await pool.query(assignQuery, [correu, randomCharacter]);
+
+    res.status(200).json({ message: 'Character invoked successfully', character: randomCharacter });
+  } catch (error) {
+    console.error('Error invoking character:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
 export async function getPersonatgeStatsByNom(req, res) {
   const { nom } = req.params;
 
@@ -42,6 +69,8 @@ export async function assignObjectToCharacter(req, res) {
       res.status(500).json({ error: 'Internal server error' });
   }
 }
+
+
 /*import Character from '../models/Character.js';
 
 export async function getCharacter(req, res) {

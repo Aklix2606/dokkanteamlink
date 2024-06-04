@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getPersonatgeStatsByNom, assignObjectToCharacter } from '../controllers/characterController.js';
+import { getPersonatgeStatsByNom, assignObjectToCharacter, invokeRandomCharacter } from '../controllers/characterController.js';
 import { verifyToken } from '../controllers/authController.js';
 import { getPersonatgesInvocatsByJugador, getCountPersonatgesInvocatsByJugador } from '../controllers/piController.js';
 
@@ -12,6 +12,7 @@ characterRoutes.get('/personatgesinvocats', verifyToken, getPersonatgesInvocatsB
 characterRoutes.get('/personatgesinvocats/count', verifyToken, getCountPersonatgesInvocatsByJugador);
 characterRoutes.get('/personatge/stats/:nom', verifyToken,getPersonatgeStatsByNom);
 characterRoutes.post('/personatge/assigna', verifyToken, assignObjectToCharacter);
+characterRoutes.post('/personatge/invoca', verifyToken, invokeRandomCharacter);
 
 
 

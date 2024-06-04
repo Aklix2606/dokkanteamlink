@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import useSWR, { mutate } from 'swr';
+import useSWR from 'swr';
 import CharacterList from '../components/CharacterList';
 import Layout from '../components/Layout';
 import { GlobalStyle } from '../components/utils/GlobalStyle';
@@ -30,7 +30,7 @@ const CenteredButton = styled.button`
   border: none;
   border-radius: 5px;
   transition: background-color 0.3s;
-
+  
   &:hover {
     background-color: #005bb5;
   }
@@ -45,7 +45,7 @@ const HiddenText = styled.div<HiddenTextProps>`
   text-align: center;
   margin-top: 20px;
   font-size: 18px;
-  color: #333;
+  color: #666;
 `;
 
 export default function Characters() {
@@ -53,7 +53,6 @@ export default function Characters() {
   const [isLoading, setIsLoading] = useState(true);
   const [characterCount, setCharacterCount] = useState<number | null>(null);
   const [textVisible, setTextVisible] = useState(false);
-  const [invokedCharacter, setInvokedCharacter] = useState<string | null>(null);
 
   const { data: characters, error: charactersError } = useSWR<Personatgeinvocat[]>('/api/personatgesinvocats', fetcher);
   const { data: countData, error: countError } = useSWR('/api/personatgesinvocats/count', fetcher);
@@ -89,31 +88,9 @@ export default function Characters() {
     return <div>No characters available</div>;
   }
 
-  const handleInvokeCharacter = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/personatge/invoca', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to invoke character');
-      }
-
-      const data = await response.json();
-      setInvokedCharacter(data.character);
-      setTextVisible(true);
-
-      // Refrescar la lista de personajes invocados y el conteo
-      mutate('/api/personatgesinvocats');
-      mutate('/api/personatgesinvocats/count');
-    } catch (error) {
-      console.error('Error invoking character:', error);
-    }
+  const handleInvokeCharacter = () => {
+    console.log('Invoking character...');
+    setTextVisible(true);
   };
 
   return (
@@ -123,9 +100,7 @@ export default function Characters() {
         <h1>Personatges</h1>
         <p>Número de personatges invocats: {characterCount}</p>
         <CenteredButton onClick={handleInvokeCharacter}>Invoca Personatge</CenteredButton>
-        <HiddenText visible={textVisible}>
-          {invokedCharacter ? `El personatge invocat és: ${invokedCharacter}` : ''}
-        </HiddenText>
+        <HiddenText visible={textVisible}>El personatge ha estat invocat!</HiddenText>
         <CharacterList characters={characters} />
       </Layout>
     </>
