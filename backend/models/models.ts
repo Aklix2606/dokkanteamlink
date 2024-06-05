@@ -11,12 +11,12 @@ export interface Jugador {
 }
 
 // Tabla: ededeveniment
-export interface Ededeveniment {
+export interface Esdeveniment {
     nomedeveniment: string;
 }
 
 // Tabla: participacioedeveniment
-export interface Participacioedeveniment {
+export interface Participacioesdeveniment {
     correu: string;
     nomedeveniment: string;
     puntuacioedeveniment: number;
@@ -83,4 +83,8 @@ export interface Participacioedevenimentgremi {
     puntuacioedevenimentgremi: number;
     recompensaespecial: string;
 }
-  
+export interface Equip{
+    nomequip: string;
+    correu: string;
+
+}

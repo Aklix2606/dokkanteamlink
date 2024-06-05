@@ -2,7 +2,7 @@ import express from 'express';
 import next from 'next';
 import jugadorRoutes from './routes/jugadorRoutes.js';
 import characterRoutes from './routes/characterRoutes.js';
-//import teamsRoutes from './routes/teamsRoutes.js';
+import teamsRoutes from './routes/teamsRoutes.js';
 import objecteRoutes from './routes/objecteRoutes.js';
 import { connectDB } from './utils/connectDB.js';
 import dotenv from 'dotenv';
@@ -25,7 +25,7 @@ app.prepare().then(() => {
   server.use('/api', jugadorRoutes);
   server.use('/api', characterRoutes);
   server.use('/api', objecteRoutes);
-  //server.use('/api', teamsRoutes);
+  server.use('/api', teamsRoutes);
   
   server.all('*', (req, res) => {
     return handle(req, res);
