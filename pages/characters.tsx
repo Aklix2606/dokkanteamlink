@@ -8,13 +8,21 @@ import { Personatgeinvocat } from '../backend/models/models';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
-const fetcher = (url: string) => {
+const fetcher = async (url: string) => {
   const token = localStorage.getItem('token');
-  return fetch(url, {
+  const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${token}`
     }
-  }).then(res => res.json());
+  });
+  
+  if (!response.ok) {
+      // Token no válido o no proporcionado
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+  }
+  
+  return response.json();
 };
 
 const CenteredButton = styled.button`
@@ -78,15 +86,16 @@ export default function Characters() {
   }
 
   if (charactersError) {
-    return <div>Error: {charactersError}</div>;
+    return <div>Error: {charactersError.message}</div>;
   }
 
   if (countError) {
-    return <div>Error fetching character count: {countError}</div>;
+    return <div>Error fetching character count: {countError.message}</div>;
   }
 
-  if (!characters) {
-    return <div>No characters available</div>;
+  // Verificación adicional de los datos recibidos
+  if (!Array.isArray(characters)) {
+    return <div>Error: Invalid characters data</div>;
   }
 
   const handleInvokeCharacter = async () => {

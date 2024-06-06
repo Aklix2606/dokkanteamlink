@@ -4,6 +4,7 @@ import jugadorRoutes from './routes/jugadorRoutes.js';
 import characterRoutes from './routes/characterRoutes.js';
 import teamsRoutes from './routes/teamsRoutes.js';
 import objecteRoutes from './routes/objecteRoutes.js';
+import guildRoutes from './routes/guildRoutes.js';
 import { connectDB } from './utils/connectDB.js';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -26,6 +27,7 @@ app.prepare().then(() => {
   server.use('/api', characterRoutes);
   server.use('/api', objecteRoutes);
   server.use('/api', teamsRoutes);
+  server.use('/api/gremi', guildRoutes);
   
   server.all('*', (req, res) => {
     return handle(req, res);

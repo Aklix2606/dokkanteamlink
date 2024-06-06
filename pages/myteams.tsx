@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Layout from '../components/Layout';
 import { GlobalStyle } from '../components/utils/GlobalStyle';
+import router from 'next/router';
+import { useAuth } from '../components/context/authContext';
 
 const CenteredButton = styled.button`
   display: flex;
@@ -24,9 +26,19 @@ const CenteredButton = styled.button`
 
 
 const TeamItem = ({ team, onDelete }) => {
+  const { isLoggedIn } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
   const [characters, setCharacters] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
   const [addedCharacters, setAddedCharacters] = useState([]);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.push('/login');
+    } else {
+      setIsLoading(false);
+    }
+  }, [isLoggedIn, router]);
 
   const handleShowCharacters = async () => {
     try {
@@ -43,8 +55,13 @@ const TeamItem = ({ team, onDelete }) => {
         const charactersData = await response.json();
         setCharacters(charactersData.filter((char) => !addedCharacters.find((addedChar) => addedChar.numobj === char.numobj)));
       } else {
-        console.error('Failed to fetch player characters:', response.statusText);
-        setErrorMessage('Failed to fetch player characters. Please try again later.');
+        if (response.status === 403 || response.status === 500) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+        } else {
+          console.error('Failed to fetch player characters:', response.statusText);
+          setErrorMessage('Failed to fetch player characters. Please try again later.');
+        }
       }
     } catch (error) {
       console.error('Error fetching player characters:', error);
@@ -68,8 +85,13 @@ const TeamItem = ({ team, onDelete }) => {
         setAddedCharacters([...addedCharacters, character]);
         setCharacters(characters.filter((char) => char.numobj !== character.numobj));
       } else {
-        console.error('Failed to add character to team:', response.statusText);
-        setErrorMessage('Failed to add character to team. Please try again later.');
+        if (response.status === 403 || response.status === 500) {
+          localStorage.removeItem('token');
+         window.location.href = '/login';
+        } else {
+          console.error('Failed to add character to team:', response.statusText);
+          setErrorMessage('Failed to add character to team. Please try again later.');
+        }
       }
     } catch (error) {
       console.error('Error adding character to team:', error);
