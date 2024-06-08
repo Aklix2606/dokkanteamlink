@@ -24,13 +24,11 @@ const CenteredButton = styled.button`
   }
 `;
 
-
 const TeamItem = ({ team, onDelete }) => {
   const { isLoggedIn } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const [characters, setCharacters] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [addedCharacters, setAddedCharacters] = useState([]);
+  const [addedCharacters, setAddedCharacters] = useState(team.characters || []);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -40,39 +38,10 @@ const TeamItem = ({ team, onDelete }) => {
     }
   }, [isLoggedIn, router]);
 
-  const handleShowCharacters = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/personatgesinvocats', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const charactersData = await response.json();
-        setCharacters(charactersData.filter((char) => !addedCharacters.find((addedChar) => addedChar.numobj === char.numobj)));
-      } else {
-        if (response.status === 403 || response.status === 500) {
-          localStorage.removeItem('token');
-          window.location.href = '/login';
-        } else {
-          console.error('Failed to fetch player characters:', response.statusText);
-          setErrorMessage('Failed to fetch player characters. Please try again later.');
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching player characters:', error);
-      setErrorMessage('An error occurred while fetching player characters.');
-    }
-  };
-
   const handleAddToTeam = async (character) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api//teams/:nomequip', {
+      const response = await fetch(`/api/teams/${team.nomequip}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -83,11 +52,10 @@ const TeamItem = ({ team, onDelete }) => {
 
       if (response.ok) {
         setAddedCharacters([...addedCharacters, character]);
-        setCharacters(characters.filter((char) => char.numobj !== character.numobj));
       } else {
         if (response.status === 403 || response.status === 500) {
           localStorage.removeItem('token');
-         window.location.href = '/login';
+          window.location.href = '/login';
         } else {
           console.error('Failed to add character to team:', response.statusText);
           setErrorMessage('Failed to add character to team. Please try again later.');
@@ -103,27 +71,13 @@ const TeamItem = ({ team, onDelete }) => {
     <div>
       <h3>{team.nomequip}</h3>
       <button onClick={onDelete}>Delete</button>
-      <button onClick={handleShowCharacters}>Show Characters</button>
-      {characters.length > 0 && (
-        <div>
-          <h4>Available Characters</h4>
-          <ul>
-            {characters.map((character) => (
-              <li key={character.numobj}>
-                {character.nom} - {character.numobj}{' '}
-                <button onClick={() => handleAddToTeam(character)}>Add to Team</button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
       {addedCharacters.length > 0 && (
         <div>
-          <h4>Added Characters</h4>
+          <h4>Characters in Team</h4>
           <ul>
             {addedCharacters.map((character) => (
-              <li key={character.numobj}>
-                {character.nom} - {character.numobj}
+              <li key={character.nom}>
+                {character.nom}
               </li>
             ))}
           </ul>
@@ -133,8 +87,6 @@ const TeamItem = ({ team, onDelete }) => {
     </div>
   );
 };
-
-
 
 const AddTeam = ({ onTeamAdded }) => {
   const [newTeamName, setNewTeamName] = useState('');

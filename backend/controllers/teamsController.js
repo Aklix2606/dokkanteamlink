@@ -4,7 +4,16 @@ export async function getTeams(req, res) {
   const correu = req.userId;
 
   try {
-    const query = 'SELECT * FROM practica.equip WHERE correu = $1';
+    const query = `
+      SELECT 
+        e.nomequip, 
+        COALESCE(json_agg(json_build_object('nom', p.nom)) FILTER (WHERE p.nom IS NOT NULL), '[]') as characters
+      FROM practica.equip e
+      LEFT JOIN practica.componen c ON e.nomequip = c.nomequip
+      LEFT JOIN practica.personatgeinvocat p ON c.nom = p.nom AND p.correu = $1
+      WHERE e.correu = $1
+      GROUP BY e.nomequip
+    `;
     const result = await pool.query(query, [correu]);
 
     return res.json(result.rows);
@@ -13,12 +22,22 @@ export async function getTeams(req, res) {
     return res.status(500).json({ message: 'Error fetching teams' });
   }
 }
+
 export async function getTeam(req, res) {
   const { nomequip } = req.params;
   const correu = req.userId;
 
   try {
-    const query = 'SELECT * FROM practica.equip WHERE nomequip = $1 AND correu = $2';
+    const query = `
+      SELECT 
+        e.nomequip, 
+        COALESCE(json_agg(json_build_object('nom', p.nom)) FILTER (WHERE p.nom IS NOT NULL), '[]') as characters
+      FROM practica.equip e
+      LEFT JOIN practica.componen c ON e.nomequip = c.nomequip
+      LEFT JOIN practica.personatgeinvocat p ON c.nom = p.nom AND p.correu = $2
+      WHERE e.nomequip = $1 AND e.correu = $2
+      GROUP BY e.nomequip
+    `;
     const result = await pool.query(query, [nomequip, correu]);
 
     if (result.rows.length > 0) {
@@ -31,6 +50,7 @@ export async function getTeam(req, res) {
     return res.status(500).json({ message: 'Error fetching team' });
   }
 }
+
 export async function composeTeam(req, res) {
   const { nomequip, nom } = req.body;
   const correu = req.userId;
@@ -57,6 +77,7 @@ export async function composeTeam(req, res) {
     return res.status(500).json({ message: 'Error composing team' });
   }
 }
+
 export async function createTeam(req, res) {
   const { nomequip } = req.body;
   const correu = req.userId;
