@@ -28,7 +28,7 @@ const ListItem = styled.li`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px; /* Reducimos el margen inferior */
+  margin-bottom: 4px;
 `;
 
 const ActionButton = styled.button`
@@ -40,7 +40,7 @@ const ActionButton = styled.button`
   border: none;
   border-radius: 5px;
   transition: background-color 0.3s;
-  margin-left: 8px; /* Añadimos un pequeño margen a la izquierda del botón */
+  margin-left: 8px;
 
   &:hover {
     background-color: #005bb5;
@@ -49,7 +49,7 @@ const ActionButton = styled.button`
 
 const CharacterName = styled.span`
   flex-grow: 1;
-  margin-right: 8px; /* Reducimos el margen derecho */
+  margin-right: 8px;
 `;
 
 const TeamName = styled.h3`
@@ -73,11 +73,12 @@ const ErrorMessage = styled.p`
   color: red;
 `;
 
-const TeamItem = ({ team, onDelete, onAddCharacter, invokedCharacters, onRemoveCharacter }) => {
+const TeamItem = ({ team, onDelete, onAddCharacter, invokedCharacters, onRemoveCharacter, onUpdateTeamName }) => {
   const { isLoggedIn } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
   const [addedCharacters, setAddedCharacters] = useState(team.characters || []);
+  const [newTeamName, setNewTeamName] = useState(team.nomequip);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -112,9 +113,29 @@ const TeamItem = ({ team, onDelete, onAddCharacter, invokedCharacters, onRemoveC
     }
   };
 
+  const handleUpdateTeamName = async () => {
+    if (newTeamName === team.nomequip) {
+      setErrorMessage('Es el mateix nom !!');
+      return;
+    }
+
+    try {
+      await onUpdateTeamName(team.nomequip, newTeamName);
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  };
+
   return (
     <Container>
       <TeamName>{team.nomequip}</TeamName>
+      <input
+        type="text"
+        value={newTeamName}
+        onChange={(e) => setNewTeamName(e.target.value)}
+      />
+      <CenteredButton onClick={handleUpdateTeamName}>Update Name</CenteredButton>
       <button onClick={onDelete}>Delete</button>
       {addedCharacters.length > 0 && (
         <div>
@@ -374,6 +395,39 @@ const MyTeams = () => {
     }
   };
 
+  const updateTeamName = async (nomequip, newNomequip) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('Authentication token not found');
+    }
+
+    try {
+      const response = await fetch(`/api/teams/${nomequip}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ newNomequip }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setTeams(teams.map(team => (team.nomequip === nomequip ? data : team)));
+        setErrorMessage(null);
+      } else {
+        if (response.status === 403 || response.status === 500) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+        }
+        const errorResponse = await response.json();
+        throw new Error(errorResponse.message || 'Failed to update team name. Please try again later.');
+      }
+    } catch (error) {
+      throw new Error('Error updating team name.');
+    }
+  };
+
   useEffect(() => {
     fetchTeams();
     fetchInvokedCharacters();
@@ -399,6 +453,7 @@ const MyTeams = () => {
               onAddCharacter={addCharacterToTeam} 
               invokedCharacters={invokedCharacters}
               onRemoveCharacter={removeCharacterFromTeam}
+              onUpdateTeamName={updateTeamName}
             />
           ))
         )}

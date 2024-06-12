@@ -7,6 +7,7 @@ import {
   composeTeam,
   getInvokedCharacters,
   removeCharacterFromTeam,
+  updateTeamName,  // Añadido
 } from '../controllers/teamsController.js';
 import { verifyToken } from '../controllers/authController.js';
 
@@ -19,5 +20,6 @@ teamsRoutes.post('/teams/:nomequip', verifyToken, composeTeam);
 teamsRoutes.delete('/teams/:nomequip', verifyToken, deleteTeam);
 teamsRoutes.get('/invokedCharacters', verifyToken, getInvokedCharacters);
 teamsRoutes.delete('/teams/:nomequip/character', verifyToken, removeCharacterFromTeam);
+teamsRoutes.put('/teams/:nomequip', verifyToken, updateTeamName); 
 
 export default teamsRoutes;

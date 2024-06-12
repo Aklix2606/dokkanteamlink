@@ -161,3 +161,55 @@ export async function removeCharacterFromTeam(req, res) {
     return res.status(500).json({ message: 'Error removing character from team' });
   }
 }
+
+export async function updateTeamName(req, res) {
+  const { nomequip } = req.params;
+  const { newNomequip } = req.body;
+  const correu = req.userId;
+
+  if (!newNomequip) {
+    return res.status(400).json({ message: 'Introdueix el nou nom' });
+  }
+
+  if (nomequip === newNomequip) {
+    return res.status(400).json({ message: 'Es el mateix nom' });
+  }
+
+  try {
+    await pool.query('BEGIN');
+
+    // Actualizar el nombre del equipo en la tabla 'practica.equip'
+    const updateTeamQuery = 'UPDATE practica.equip SET nomequip = $1 WHERE nomequip = $2 AND correu = $3 RETURNING *';
+    const result = await pool.query(updateTeamQuery, [newNomequip, nomequip, correu]);
+
+    if (result.rowCount > 0) {
+      // Actualizar el nombre del equipo en la tabla 'practica.componen'
+      const updateComponentsQuery = 'UPDATE practica.componen SET nomequip = $1 WHERE nomequip = $2';
+      await pool.query(updateComponentsQuery, [newNomequip, nomequip]);
+
+      await pool.query('COMMIT');
+
+      // Fetch updated team with characters
+      const updatedTeamQuery = `
+        SELECT 
+          e.nomequip, 
+          COALESCE(json_agg(json_build_object('nom', p.nom)) FILTER (WHERE p.nom IS NOT NULL), '[]') as characters
+        FROM practica.equip e
+        LEFT JOIN practica.componen c ON e.nomequip = c.nomequip
+        LEFT JOIN practica.personatgeinvocat p ON c.nom = p.nom AND p.correu = $1
+        WHERE e.nomequip = $2 AND e.correu = $1
+        GROUP BY e.nomequip
+      `;
+      const updatedTeamResult = await pool.query(updatedTeamQuery, [correu, newNomequip]);
+
+      return res.json(updatedTeamResult.rows[0]);
+    } else {
+      await pool.query('ROLLBACK');
+      return res.status(404).json({ message: 'Team not found or not authorized' });
+    }
+  } catch (error) {
+    await pool.query('ROLLBACK');
+    console.error('Error updating team name:', error);
+    return res.status(500).json({ message: 'Error updating team name' });
+  }
+}
