@@ -1,5 +1,24 @@
 import { pool } from '../utils/connectDB.js';
 
+export async function getInvokedCharacters(req, res) {
+  const correu = req.userId;
+
+  try {
+    const query = `
+      SELECT p.nom, p.atac, p.vida, p.defensa, p.tipus
+      FROM practica.personatgeinvocat pi
+      JOIN practica.personatge p ON pi.nom = p.nom
+      WHERE pi.correu = $1
+    `;
+    const result = await pool.query(query, [correu]);
+
+    return res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching invoked characters:', error);
+    return res.status(500).json({ message: 'Error fetching invoked characters' });
+  }
+}
+
 export async function getTeams(req, res) {
   const correu = req.userId;
 
@@ -67,7 +86,6 @@ export async function composeTeam(req, res) {
       return res.status(404).json({ message: 'Team not found or not authorized' });
     }
 
-    // Insertar el personaje en la tabla de componentes
     const insertQuery = 'INSERT INTO practica.componen (nomequip, nom) VALUES ($1, $2) RETURNING *';
     const insertResult = await pool.query(insertQuery, [nomequip, nom]);
 
@@ -102,16 +120,44 @@ export async function deleteTeam(req, res) {
   const correu = req.userId;
 
   try {
-    const query = 'DELETE FROM practica.equip WHERE nomequip = $1 AND correu = $2';
-    const result = await pool.query(query, [nomequip, correu]);
+    await pool.query('BEGIN');
+
+    const deleteComponentsQuery = 'DELETE FROM practica.componen WHERE nomequip = $1';
+    await pool.query(deleteComponentsQuery, [nomequip]);
+
+    const deleteTeamQuery = 'DELETE FROM practica.equip WHERE nomequip = $1 AND correu = $2';
+    const result = await pool.query(deleteTeamQuery, [nomequip, correu]);
 
     if (result.rowCount > 0) {
+      await pool.query('COMMIT');
       return res.json({ message: 'Team deleted successfully' });
     } else {
+      await pool.query('ROLLBACK');
       return res.status(404).json({ message: 'Team not found or not authorized' });
     }
   } catch (error) {
+    await pool.query('ROLLBACK');
     console.error('Error deleting team:', error);
     return res.status(500).json({ message: 'Error deleting team' });
+  }
+}
+
+export async function removeCharacterFromTeam(req, res) {
+  const { nomequip } = req.params;
+  const { nom } = req.body;
+  const correu = req.userId;
+
+  try {
+    const query = 'DELETE FROM practica.componen WHERE nomequip = $1 AND nom = $2';
+    const result = await pool.query(query, [nomequip, nom]);
+
+    if (result.rowCount > 0) {
+      return res.json({ message: 'Character removed from team successfully' });
+    } else {
+      return res.status(404).json({ message: 'Character not found in team' });
+    }
+  } catch (error) {
+    console.error('Error removing character from team:', error);
+    return res.status(500).json({ message: 'Error removing character from team' });
   }
 }
