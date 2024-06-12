@@ -43,17 +43,30 @@ const ErrorMessage = styled.div`
   color: red;
 `;
 
+const SearchInput = styled.input`
+  margin: 10px 0;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 100%;
+  max-width: 400px;
+`;
+
 export default function Guild() {
   const { isLoggedIn } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [guildMembers, setGuildMembers] = useState<Jugador[] | null>(null);
   const [guildName, setGuildName] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [guildNameerror, setGuildNameerror] = useState<string | null>(null);
+  const [guildNameError, setGuildNameError] = useState<string | null>(null);
+  const [allGuilds, setAllGuilds] = useState<{ nom_gremi: string }[] | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
 
   const { data: members, error: membersError } = useSWR<Jugador[]>('/api/gremi/membres', fetcher);
-  
+  const { data: guilds, error: guildsError } = useSWR<{ nom_gremi: string }[]>('/api/gremi/tots', fetcher);
+
   useEffect(() => {
     if (!isLoggedIn) {
       router.push('/login');
@@ -71,6 +84,16 @@ export default function Guild() {
       setGuildMembers(members);
     }
   }, [members, membersError]);
+
+  useEffect(() => {
+    if (guildsError) {
+      setError(guildsError.message);
+      setAllGuilds(null);
+    } else if (guilds) {
+      setError(null);
+      setAllGuilds(guilds);
+    }
+  }, [guilds, guildsError]);
 
   const handleCreateGuild = async () => {
     try {
@@ -93,11 +116,36 @@ export default function Guild() {
       setGuildMembers([data.message]);
       setGuildName('');
 
-      
       mutate('/api/gremi/membres');
+      mutate('/api/gremi/tots');
     } catch (error) {
       console.error('Error creating guild:', error);
-      setGuildNameerror(error.message);
+      setGuildNameError(error.message);
+    }
+  };
+
+  const handleJoinGuild = async (guildName) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/gremi/unir', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ nom_gremi: guildName })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to join guild');
+      }
+
+      mutate('/api/gremi/membres');
+      mutate('/api/gremi/tots');
+    } catch (error) {
+      console.error('Error joining guild:', error);
+      setError(error.message);
     }
   };
 
@@ -117,13 +165,17 @@ export default function Guild() {
         throw new Error(errorData.error || 'Failed to leave guild');
       }
 
-      
       mutate('/api/gremi/membres');
+      mutate('/api/gremi/tots');
     } catch (error) {
       console.error('Error leaving guild:', error);
       setError(error.message);
     }
   };
+
+  const filteredGuilds = allGuilds?.filter(guild =>
+    guild.nom_gremi.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -134,25 +186,43 @@ export default function Guild() {
       <GlobalStyle />
       <Layout>
         <h1>Gremio</h1>
-        {!guildMembers && (
+        {!guildMembers ? (
+          <>
             <div>
-            <input
+              <input
+                type="text"
+                value={guildName}
+                onChange={(e) => setGuildName(e.target.value)}
+                placeholder="Nombre del Gremio"
+              />
+              <CenteredButton onClick={handleCreateGuild}>Crear Gremio</CenteredButton>
+              {guildNameError && <ErrorMessage>{guildNameError}</ErrorMessage>}
+            </div>
+            <h2>Todos los Gremios</h2>
+            <SearchInput
               type="text"
-              value={guildName}
-              onChange={(e) => setGuildName(e.target.value)}
-              placeholder="Nombre del Gremio"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Buscar gremio"
             />
-            <CenteredButton onClick={handleCreateGuild}>Crear Gremio</CenteredButton>
-            {guildNameerror && <ErrorMessage>{guildNameerror}</ErrorMessage>}
-          </div>
-        )}
-        {guildMembers && (
+            {filteredGuilds && (
+              <ul>
+                {filteredGuilds.map((guild, index) => (
+                  <li key={index}>
+                    {guild.nom_gremi}
+                    <CenteredButton onClick={() => handleJoinGuild(guild.nom_gremi)}>Unirse</CenteredButton>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        ) : (
           <div>
             <h2>Membres del Gremi - {guildMembers[0].nom_gremi}</h2>
             <ul>
-            {guildMembers.map((member, index) => (
+              {guildMembers.map((member, index) => (
                 <li key={index}>{member.correu}</li>
-            ))}
+              ))}
             </ul>
             <CenteredButton onClick={handleLeaveGuild}>Dejar Gremio</CenteredButton>
           </div>

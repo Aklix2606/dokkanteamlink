@@ -1,4 +1,3 @@
-// controllers/guildController.js
 import { pool } from '../utils/connectDB.js';
 
 // Obtener miembros del gremio
@@ -29,7 +28,6 @@ export const createGuild = async (req, res) => {
     const { nom_gremi } = req.body;
 
     try {
-        
         const userQuery = 'SELECT nom_gremi FROM practica.jugador WHERE correu = $1';
         const userResult = await pool.query(userQuery, [userId]);
         if (userResult.rows[0]?.nom_gremi) {
@@ -82,5 +80,49 @@ export const leaveGuild = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error al dejar el gremio' });
+    }
+};
+
+// Obtener todos los gremios
+export const getAllGuilds = async (req, res) => {
+    try {
+        const guildsQuery = 'SELECT nom_gremi FROM practica.gremi';
+        const guildsResult = await pool.query(guildsQuery);
+
+        // Enviar los gremios como un array de objetos con la propiedad nom_gremi
+        const guilds = guildsResult.rows.map(row => ({ nom_gremi: row.nom_gremi }));
+
+        res.json(guilds);
+    } catch (error) {
+        console.error('Error obteniendo todos los gremios:', error);
+        res.status(500).json({ error: 'Error obteniendo todos los gremios' });
+    }
+};
+
+// Unirse a un gremio
+export const joinGuild = async (req, res) => {
+    const { userId } = req;
+    const { nom_gremi } = req.body;
+
+    try {
+        const userQuery = 'SELECT nom_gremi FROM practica.jugador WHERE correu = $1';
+        const userResult = await pool.query(userQuery, [userId]);
+        if (userResult.rows[0]?.nom_gremi) {
+            return res.status(403).json({ error: 'Ya pertenece a un gremio' });
+        }
+
+        const existingGuildQuery = 'SELECT nom_gremi FROM practica.gremi WHERE nom_gremi = $1';
+        const existingGuildResult = await pool.query(existingGuildQuery, [nom_gremi]);
+        if (existingGuildResult.rows.length === 0) {
+            return res.status(404).json({ error: 'El gremio no existe' });
+        }
+
+        const updateUserQuery = 'UPDATE practica.jugador SET nom_gremi = $1 WHERE correu = $2';
+        await pool.query(updateUserQuery, [nom_gremi, userId]);
+
+        res.status(200).json({ message: 'Te has unido al gremio' });
+    } catch (error) {
+        console.error('Error uniéndose al gremio:', error);
+        res.status(500).json({ error: 'Error uniéndose al gremio' });
     }
 };
