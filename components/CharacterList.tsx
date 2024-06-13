@@ -11,6 +11,7 @@ const StyledButton = styled(Button)({
     width: '100%',
     textAlign: 'left',
     textTransform: 'none',
+    fontSize: '18px',
     '&:hover': {
         backgroundColor: '#e0e0e0',
     },

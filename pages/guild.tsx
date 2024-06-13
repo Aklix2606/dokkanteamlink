@@ -53,6 +53,22 @@ const SearchInput = styled.input`
   max-width: 400px;
 `;
 
+const PaginationButton = styled.button`
+  margin: 5px;
+  padding: 10px;
+  font-size: 35px;
+  cursor: pointer;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+
+  &:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+  }
+`;
+
 export default function Guild() {
   const { isLoggedIn } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
@@ -62,6 +78,8 @@ export default function Guild() {
   const [guildNameError, setGuildNameError] = useState<string | null>(null);
   const [allGuilds, setAllGuilds] = useState<{ nom_gremi: string }[] | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const guildsPerPage = 8;
   const router = useRouter();
 
   const { data: members, error: membersError } = useSWR<Jugador[]>('/api/gremi/membres', fetcher);
@@ -177,6 +195,12 @@ export default function Guild() {
     guild.nom_gremi.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const indexOfLastGuild = currentPage * guildsPerPage;
+  const indexOfFirstGuild = indexOfLastGuild - guildsPerPage;
+  const currentGuilds = filteredGuilds?.slice(indexOfFirstGuild, indexOfLastGuild);
+
+  const totalPages = Math.ceil((filteredGuilds?.length || 0) / guildsPerPage);
+
   if (isLoading) {
     return <div>Carregant...</div>;
   }
@@ -194,6 +218,12 @@ export default function Guild() {
                 value={guildName}
                 onChange={(e) => setGuildName(e.target.value)}
                 placeholder="Nom del Gremi"
+                style={{
+                  fontSize: '1.5em',
+                  padding: '10px',
+                  width: '25%',
+                  boxSizing: 'border-box'
+                }}
               />
               <CenteredButton onClick={handleCreateGuild}>Crear Gremi</CenteredButton>
               {guildNameError && <ErrorMessage>{guildNameError}</ErrorMessage>}
@@ -205,16 +235,30 @@ export default function Guild() {
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar gremi"
             />
-            {filteredGuilds && (
+            {currentGuilds && (
               <ul>
-                {filteredGuilds.map((guild, index) => (
+                {currentGuilds.map((guild, index) => (
                   <li key={index}>
-                    {guild.nom_gremi}
+                    <span style={{ fontSize: '1.5em' }}>{guild.nom_gremi}</span>
                     <CenteredButton onClick={() => handleJoinGuild(guild.nom_gremi)}>Unir-se</CenteredButton>
                   </li>
                 ))}
               </ul>
             )}
+            <div>
+              <PaginationButton
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                Anterior
+              </PaginationButton>
+              <PaginationButton
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                Següent
+              </PaginationButton>
+            </div>
           </>
         ) : (
           <div>

@@ -53,7 +53,7 @@ const HiddenText = styled.div<HiddenTextProps>`
   text-align: center;
   margin-top: 20px;
   font-size: 18px;
-  color: #333;
+  color: green;
 `;
 
 export default function Characters() {

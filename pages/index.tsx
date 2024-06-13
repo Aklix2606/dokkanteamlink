@@ -7,26 +7,26 @@ export default function Home() {
     <>
       <GlobalStyle/>
       <Layout>
-        <div style={{ padding: '20px' }}>
-          <h1>Welcome to Our Dynamic Team Builder!</h1>
+        <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', lineHeight: '1.6', color: '#fff' }}>
+          <h1 style={{ fontSize: '2.5em', fontWeight: 'bold', color: '#fff' }}>Benvingut al Nostre Dinàmic Creador d'Equips!</h1>
 
-          <h2>🌟 Discover a New Way to Create and Manage Your Teams!</h2>
-          <p>Welcome to a world where building and managing your teams is not just easy, but also fun! Our innovative platform is designed to bring your team-building experience to the next level. Whether you're a fan of assembling dream teams or just looking for an efficient way to organize groups, we've got you covered.</p>
+          <h2 style={{ fontSize: '2em', fontWeight: 'bold', color: '#fff' }}>🌟 Descobreix una Nova Manera de Crear i Gestionar els Teus Equips!</h2>
+          <p style={{ fontSize: '1.2em', color: '#fff' }}>Benvingut a un món on construir i gestionar els teus equips no només és fàcil, sinó també divertit! La nostra innovadora plataforma està dissenyada per portar la teva experiència de creació d'equips al següent nivell. Tant si ets un aficionat a muntar equips de fantasía com si simplement busques una manera eficient d'organitzar grups, tenim tot el que necessites.</p>
           
-          <h3>🔥 Key Features:</h3>
-          <ul>
-            <li><strong>Create Your Teams</strong>: Craft your unique teams by selecting from a wide array of characters.</li>
-            <li><strong>Manage with Ease</strong>: Update your teams as you see fit.</li>
-            <li><strong>Visualize Your Team</strong>: See your team come to life!</li>
-            <li><strong>Secure and Personalized</strong>: Your teams are your own.</li>
-            <li><strong>Community and Sharing</strong>: Engage with a community of fellow team builders.</li>
+          <h3 style={{ fontSize: '1.8em', fontWeight: 'bold', color: '#fff' }}>🔥 Característiques Clau:</h3>
+          <ul style={{ fontSize: '1.2em', color: '#fff' }}>
+            <li><strong>Crea els Teus Equips</strong>: Construeix els teus equips únics seleccionant d'una àmplia gamma de personatges.</li>
+            <li><strong>Gestiona amb Facilitat</strong>: Actualitza els teus equips segons ho consideris oportú.</li>
+            <li><strong>Visualitza el Teu Equip</strong>: Veu com el teu equip cobra vida!</li>
+            <li><strong>Segur i Personalitzat</strong>: Els teus equips són només teus.</li>
+            <li><strong>Comunitat i Compartició</strong>: Participa en una comunitat de creadors d'equips.</li>
           </ul>
 
-          <h3>🌐 Seamless Experience Across Devices</h3>
-          <p>Our platform is designed for accessibility and ease of use across various devices.</p>
+          <h3 style={{ fontSize: '1.8em', fontWeight: 'bold', color: '#fff' }}>🌐 Experiència Sense Interrupcions a Tots els Dispositius</h3>
+          <p style={{ fontSize: '1.2em', color: '#fff' }}>La nostra plataforma està dissenyada per a l'accessibilitat i facilitat d'ús en diversos dispositius.</p>
 
-          <h3>🚀 Get Started</h3>
-          <p>Dive into the experience of seamless team building. Register today, and start creating teams that resonate with your style and strategy.</p>
+          <h3 style={{ fontSize: '1.8em', fontWeight: 'bold', color: '#fff' }}>🚀 Comença Ara</h3>
+          <p style={{ fontSize: '1.2em', color: '#fff' }}>Endinsa't en l'experiència de construir equips de manera senzilla. Registra't avui mateix i comença a crear equips que reflecteixin el teu estil i estratègia.</p>
         </div>
       </Layout>
     </>

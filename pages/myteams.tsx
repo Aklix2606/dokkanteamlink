@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Layout from '../components/Layout';
 import { GlobalStyle } from '../components/utils/GlobalStyle';
-import router from 'next/router';
 import { useAuth } from '../components/context/authContext';
+import { useRouter } from 'next/router';
 
 const CenteredButton = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0 auto;
+  margin: 10px auto;
   padding: 10px 20px;
   font-size: 18px;
   cursor: pointer;
@@ -33,7 +33,7 @@ const ListItem = styled.li`
 
 const ActionButton = styled.button`
   padding: 5px 10px;
-  font-size: 14px;
+  font-size: 22px;
   cursor: pointer;
   background-color: #0070f3;
   color: white;
@@ -49,15 +49,18 @@ const ActionButton = styled.button`
 
 const CharacterName = styled.span`
   flex-grow: 1;
-  margin-right: 8px;
+  margin-right: 24px;
+  font-size: 1.2em; 
 `;
 
 const TeamName = styled.h3`
-  margin-bottom: 16px;
+  margin-bottom: 44px;
+  font-size: 1.6em; 
 `;
 
 const SectionTitle = styled.h4`
   margin-bottom: 8px;
+  font-size: 1.5em; 
 `;
 
 const Container = styled.div`
@@ -73,12 +76,30 @@ const ErrorMessage = styled.p`
   color: red;
 `;
 
-const TeamItem = ({ team, onDelete, onAddCharacter, invokedCharacters, onRemoveCharacter, onUpdateTeamName }) => {
+const PaginationButton = styled.button`
+  margin: 5px;
+  padding: 10px;
+  font-size: 35px;
+  cursor: pointer;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+
+  &:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+  }
+`;
+
+const TeamItem = ({ team, onDelete, onAddCharacter, invokedCharacters, onRemoveCharacter, onUpdateTeamName, invokedPage, setInvokedPage }) => {
   const { isLoggedIn } = useAuth();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
   const [addedCharacters, setAddedCharacters] = useState(team.characters || []);
   const [newTeamName, setNewTeamName] = useState(team.nomequip);
+  const charactersPerPage = 4;
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -127,6 +148,11 @@ const TeamItem = ({ team, onDelete, onAddCharacter, invokedCharacters, onRemoveC
     }
   };
 
+  const indexOfLastCharacter = invokedPage * charactersPerPage;
+  const indexOfFirstCharacter = indexOfLastCharacter - charactersPerPage;
+  const currentCharacters = invokedCharacters.slice(indexOfFirstCharacter, indexOfLastCharacter);
+  const totalCharacterPages = Math.ceil(invokedCharacters.length / charactersPerPage);
+
   return (
     <Container>
       <TeamName>{team.nomequip}</TeamName>
@@ -134,6 +160,12 @@ const TeamItem = ({ team, onDelete, onAddCharacter, invokedCharacters, onRemoveC
         type="text"
         value={newTeamName}
         onChange={(e) => setNewTeamName(e.target.value)}
+        style={{
+          fontSize: '1.5em', 
+          padding: '10px', 
+          width: '100%', 
+          boxSizing: 'border-box' 
+        }}
       />
       <CenteredButton onClick={handleUpdateTeamName}>Actualitzar Nom</CenteredButton>
       <button onClick={onDelete}>Esborrar</button>
@@ -152,7 +184,7 @@ const TeamItem = ({ team, onDelete, onAddCharacter, invokedCharacters, onRemoveC
       )}
       <SectionTitle>Personatges Invocats</SectionTitle>
       <ul>
-        {invokedCharacters.map((character) => (
+        {currentCharacters.map((character) => (
           <ListItem key={character.nom}>
             <CharacterName>{character.nom}</CharacterName>
             <ActionButton onClick={() => handleAddCharacter(character)}>Afegir a l'equip</ActionButton>
@@ -160,6 +192,20 @@ const TeamItem = ({ team, onDelete, onAddCharacter, invokedCharacters, onRemoveC
         ))}
       </ul>
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+      <div>
+        <PaginationButton
+          onClick={() => setInvokedPage(invokedPage - 1)}
+          disabled={invokedPage === 1}
+        >
+          Anterior
+        </PaginationButton>
+        <PaginationButton
+          onClick={() => setInvokedPage(invokedPage + 1)}
+          disabled={invokedPage === totalCharacterPages}
+        >
+          Següent
+        </PaginationButton>
+      </div>
     </Container>
   );
 };
@@ -202,7 +248,7 @@ const AddTeam = ({ onTeamAdded }) => {
   };
 
   return (
-    <div className="add-team-popup">
+    <div>
       <h2>Afegir Equip</h2>
       {errorMessage && <p className="error-message">{errorMessage}</p>}
       <input
@@ -210,18 +256,39 @@ const AddTeam = ({ onTeamAdded }) => {
         placeholder="Nom de l'equip"
         value={newTeamName}
         onChange={(e) => setNewTeamName(e.target.value)}
+        style={{
+          fontSize: '1em',
+          padding: '10px',
+          width: '25%',
+          boxSizing: 'border-box',
+          margin: '10px 0'
+        }}
       />
-      <button onClick={handleAddTeamSubmit}>Crear Equip</button>
+      <CenteredButton onClick={handleAddTeamSubmit}>Crear Equip</CenteredButton>
     </div>
   );
 };
 
 const MyTeams = () => {
+  const { isLoggedIn } = useAuth();
+  const router = useRouter();
   const [teams, setTeams] = useState([]);
   const [invokedCharacters, setInvokedCharacters] = useState([]);
   const [showAddTeamPopup, setShowAddTeamPopup] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [invokedPage, setInvokedPage] = useState(1);
+  const teamsPerPage = 1;
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.push('/login');
+    } else {
+      fetchTeams();
+      fetchInvokedCharacters();
+    }
+  }, [isLoggedIn, router]);
 
   const fetchTeams = async () => {
     const token = localStorage.getItem('token');
@@ -301,6 +368,7 @@ const MyTeams = () => {
 
   const handleTeamAdded = (newTeam) => {
     setTeams([...teams, newTeam]);
+    setCurrentPage(teams.length + 1);
     setShowAddTeamPopup(false);
   };
 
@@ -322,6 +390,7 @@ const MyTeams = () => {
 
       if (response.ok) {
         setTeams(teams.filter((team) => team.nomequip !== nomequip));
+        setCurrentPage(currentPage > 1 ? currentPage - 1 : 1);
       } else {
         console.error('Failed to delete team:', response.statusText);
         setErrorMessage('Failed to delete team. Please try again later.');
@@ -428,16 +497,18 @@ const MyTeams = () => {
     }
   };
 
-  useEffect(() => {
-    fetchTeams();
-    fetchInvokedCharacters();
-  }, []);
+  const currentTeam = teams[currentPage - 1];
+  const totalPages = teams.length;
 
   return (
     <>
       <GlobalStyle />
       <Layout>
         <h1>Els teus equips</h1>
+        <CenteredButton onClick={handleOpenAddTeamPopup}>Afegir equip</CenteredButton>
+        {showAddTeamPopup && (
+          <AddTeam onTeamAdded={handleTeamAdded} />
+        )}
         {isLoading ? (
           <p>Carregant...</p>
         ) : errorMessage ? (
@@ -445,22 +516,36 @@ const MyTeams = () => {
         ) : teams.length === 0 ? (
           <p>No s'ha trobat cap equip. Crea el teu primer equip per veure'l!</p>
         ) : (
-          teams.map((team) => (
-            <TeamItem 
-              key={team.nomequip} 
-              team={team} 
-              onDelete={() => deleteTeam(team.nomequip)} 
-              onAddCharacter={addCharacterToTeam} 
-              invokedCharacters={invokedCharacters}
-              onRemoveCharacter={removeCharacterFromTeam}
-              onUpdateTeamName={updateTeamName}
-            />
-          ))
+          <>
+            {currentTeam && (
+              <TeamItem 
+                key={currentTeam.nomequip} 
+                team={currentTeam} 
+                onDelete={() => deleteTeam(currentTeam.nomequip)} 
+                onAddCharacter={addCharacterToTeam} 
+                invokedCharacters={invokedCharacters}
+                onRemoveCharacter={removeCharacterFromTeam}
+                onUpdateTeamName={updateTeamName}
+                invokedPage={invokedPage}
+                setInvokedPage={setInvokedPage}
+              />
+            )}
+            <div>
+              <PaginationButton
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                Anterior
+              </PaginationButton>
+              <PaginationButton
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                Següent
+              </PaginationButton>
+            </div>
+          </>
         )}
-        {showAddTeamPopup && (
-          <AddTeam onTeamAdded={handleTeamAdded} />
-        )}
-        <CenteredButton onClick={handleOpenAddTeamPopup}>Afegir equip</CenteredButton>
       </Layout>
     </>
   );
