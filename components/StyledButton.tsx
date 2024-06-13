@@ -73,7 +73,7 @@ export default function Characters() {
   }, [countData]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Carregant...</div>;
   }
 
   if (charactersError) {
@@ -85,7 +85,7 @@ export default function Characters() {
   }
 
   if (!characters) {
-    return <div>No characters available</div>;
+    return <div>No hi ha personatges disponibles</div>;
   }
 
   const handleInvokeCharacter = () => {

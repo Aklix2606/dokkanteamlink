@@ -23,11 +23,11 @@ const TeamsPage = () => {
   const { data, error } = useSWR<Character[]>('/api/characters', fetcher);
 
   if (!isLoggedIn) {
-    return <div>Redirecting...</div>;
+    return <div>Redirigint...</div>;
   }
 
-  if (error) return <div>failed to load</div>;
-  if (!data) return <div>loading...</div>;
+  if (error) return <div>Error al carregar</div>;
+  if (!data) return <div>Carregant...</div>;
 
   return (
     <>

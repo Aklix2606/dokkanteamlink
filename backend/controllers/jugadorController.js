@@ -120,3 +120,22 @@ export async function getCurrentJugador(req, res) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+
+export async function updateJugadorContrasenya(req, res) {
+    const { userId } = req;
+    const { newPassword } = req.body;
+
+    try {
+        const query = 'UPDATE practica.jugador SET contrasenya = $1 WHERE correu = $2 RETURNING *';
+        const { rows } = await pool.query(query, [newPassword, userId]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Jugador not found' });
+        }
+
+        res.json({ message: 'Contraseña actualizada correctamente', jugador: rows[0] });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+}

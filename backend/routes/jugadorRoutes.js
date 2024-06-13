@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { postJugador, getCurrentJugador } from '../controllers/jugadorController.js';
+import { postJugador, getCurrentJugador, updateJugadorContrasenya } from '../controllers/jugadorController.js';
 import { loginUser, verifyToken } from '../controllers/authController.js';
 
 const jugadorRoutes = Router();
@@ -7,6 +7,7 @@ const jugadorRoutes = Router();
 jugadorRoutes.post('/login', loginUser);
 jugadorRoutes.post('/register', postJugador);
 jugadorRoutes.get('/jugadors/me', verifyToken, getCurrentJugador);
+jugadorRoutes.post('/cambiarContrasenya', verifyToken, updateJugadorContrasenya);
 
 export default jugadorRoutes;
 

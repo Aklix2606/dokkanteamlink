@@ -82,7 +82,7 @@ export default function Characters() {
   }, [countData]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Carregant...</div>;
   }
 
   if (charactersError) {
@@ -90,12 +90,12 @@ export default function Characters() {
   }
 
   if (countError) {
-    return <div>Error fetching character count: {countError.message}</div>;
+    return <div>Error aconseguint el nombre de personatges: {countError.message}</div>;
   }
 
   // Verificación adicional de los datos recibidos
   if (!Array.isArray(characters)) {
-    return <div>Error: Invalid characters data</div>;
+    return <div>Error: Dades de personatges invalides</div>;
   }
 
   const handleInvokeCharacter = async () => {

@@ -135,27 +135,27 @@ const TeamItem = ({ team, onDelete, onAddCharacter, invokedCharacters, onRemoveC
         value={newTeamName}
         onChange={(e) => setNewTeamName(e.target.value)}
       />
-      <CenteredButton onClick={handleUpdateTeamName}>Update Name</CenteredButton>
-      <button onClick={onDelete}>Delete</button>
+      <CenteredButton onClick={handleUpdateTeamName}>Actualitzar Nom</CenteredButton>
+      <button onClick={onDelete}>Esborrar</button>
       {addedCharacters.length > 0 && (
         <div>
-          <SectionTitle>Characters in Team</SectionTitle>
+          <SectionTitle>Personatges que formen part de l'equip</SectionTitle>
           <ul>
             {addedCharacters.map((character) => (
               <ListItem key={character.nom}>
                 <CharacterName>{character.nom}</CharacterName>
-                <ActionButton onClick={() => handleRemoveCharacter(character)}>Remove</ActionButton>
+                <ActionButton onClick={() => handleRemoveCharacter(character)}>Treure</ActionButton>
               </ListItem>
             ))}
           </ul>
         </div>
       )}
-      <SectionTitle>Invoked Characters</SectionTitle>
+      <SectionTitle>Personatges Invocats</SectionTitle>
       <ul>
         {invokedCharacters.map((character) => (
           <ListItem key={character.nom}>
             <CharacterName>{character.nom}</CharacterName>
-            <ActionButton onClick={() => handleAddCharacter(character)}>Add to Team</ActionButton>
+            <ActionButton onClick={() => handleAddCharacter(character)}>Afegir a l'equip</ActionButton>
           </ListItem>
         ))}
       </ul>
@@ -170,7 +170,7 @@ const AddTeam = ({ onTeamAdded }) => {
 
   const handleAddTeamSubmit = async () => {
     if (!newTeamName) {
-      setErrorMessage('Please enter a team name.');
+      setErrorMessage('Siusplau poseu un nom.');
       return;
     }
 
@@ -203,15 +203,15 @@ const AddTeam = ({ onTeamAdded }) => {
 
   return (
     <div className="add-team-popup">
-      <h2>Add Team</h2>
+      <h2>Afegir Equip</h2>
       {errorMessage && <p className="error-message">{errorMessage}</p>}
       <input
         type="text"
-        placeholder="Team Name"
+        placeholder="Nom de l'equip"
         value={newTeamName}
         onChange={(e) => setNewTeamName(e.target.value)}
       />
-      <button onClick={handleAddTeamSubmit}>Create Team</button>
+      <button onClick={handleAddTeamSubmit}>Crear Equip</button>
     </div>
   );
 };
@@ -437,13 +437,13 @@ const MyTeams = () => {
     <>
       <GlobalStyle />
       <Layout>
-        <h1>Your Teams</h1>
+        <h1>Els teus equips</h1>
         {isLoading ? (
-          <p>Loading...</p>
+          <p>Carregant...</p>
         ) : errorMessage ? (
           <p className="error-message">{errorMessage}</p>
         ) : teams.length === 0 ? (
-          <p>No teams found. Create your first team!</p>
+          <p>No s'ha trobat cap equip. Crea el teu primer equip per veure'l!</p>
         ) : (
           teams.map((team) => (
             <TeamItem 
@@ -460,7 +460,7 @@ const MyTeams = () => {
         {showAddTeamPopup && (
           <AddTeam onTeamAdded={handleTeamAdded} />
         )}
-        <CenteredButton onClick={handleOpenAddTeamPopup}>Add Team</CenteredButton>
+        <CenteredButton onClick={handleOpenAddTeamPopup}>Afegir equip</CenteredButton>
       </Layout>
     </>
   );

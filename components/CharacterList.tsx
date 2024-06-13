@@ -121,7 +121,7 @@ const CharacterList: React.FC<CharacterListProps> = ({ characters }) => {
         <div>
             <input
                 type="text"
-                placeholder="Search characters..."
+                placeholder="Buscar personatges..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{ marginBottom: '10px', padding: '5px', width: '200px' }}
@@ -157,23 +157,23 @@ const CharacterList: React.FC<CharacterListProps> = ({ characters }) => {
                                                 <p>Tipusobj: {objecteData.tipusobj}</p>
                                             </>
                                         ) : (
-                                            <p>No Object Assigned</p>
+                                            <p>No Objecte Asignat</p>
                                         )}
                                     </>
                                 )}
                             </CharacterStatsContainer>
                             {!objecteData && (
-                                <Button onClick={handleAddObject}>Add Object</Button>
+                                <Button onClick={handleAddObject}>Afegir Objecte</Button>
                             )}
                         </>
                     )}
-                    <Button onClick={handleCloseModal}>Close</Button>
+                    <Button onClick={handleCloseModal}>Tancar</Button>
                 </div>
             </Modal>
             {showObjectSelector && (
                 <Modal open={showObjectSelector} onClose={() => setShowObjectSelector(false)}>
                     <div style={{ padding: '20px', backgroundColor: 'white', borderRadius: '5px', maxWidth: '400px', margin: 'auto', marginTop: '100px' }}>
-                        <h3>Select an Object</h3>
+                        <h3>Selecciona un Objecte</h3>
                         {availableObjects.length > 0 ? (
                             <ul>
                                 <CharacterStatsContainer>
@@ -181,14 +181,14 @@ const CharacterList: React.FC<CharacterListProps> = ({ characters }) => {
                                     
                                         <li key={obj.numobj}>
                                             {obj.tipusobj} (ID: {obj.numobj})
-                                            <Button onClick={() => handleAssignObject(obj.numobj)}>Assign</Button>
+                                            <Button onClick={() => handleAssignObject(obj.numobj)}>Assignar</Button>
                                         </li>
                                     
                                 ))}
                                 </CharacterStatsContainer>
                             </ul>
                         ) : (
-                            <p>No available objects</p>
+                            <p>No hi ha objectes disponibles</p>
                         )}
                     </div>
                 </Modal>

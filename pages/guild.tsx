@@ -178,14 +178,14 @@ export default function Guild() {
   );
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Carregant...</div>;
   }
 
   return (
     <>
       <GlobalStyle />
       <Layout>
-        <h1>Gremio</h1>
+        <h1>Gremi</h1>
         {!guildMembers ? (
           <>
             <div>
@@ -193,24 +193,24 @@ export default function Guild() {
                 type="text"
                 value={guildName}
                 onChange={(e) => setGuildName(e.target.value)}
-                placeholder="Nombre del Gremio"
+                placeholder="Nom del Gremi"
               />
-              <CenteredButton onClick={handleCreateGuild}>Crear Gremio</CenteredButton>
+              <CenteredButton onClick={handleCreateGuild}>Crear Gremi</CenteredButton>
               {guildNameError && <ErrorMessage>{guildNameError}</ErrorMessage>}
             </div>
-            <h2>Todos los Gremios</h2>
+            <h2>Llista de gremis</h2>
             <SearchInput
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Buscar gremio"
+              placeholder="Buscar gremi"
             />
             {filteredGuilds && (
               <ul>
                 {filteredGuilds.map((guild, index) => (
                   <li key={index}>
                     {guild.nom_gremi}
-                    <CenteredButton onClick={() => handleJoinGuild(guild.nom_gremi)}>Unirse</CenteredButton>
+                    <CenteredButton onClick={() => handleJoinGuild(guild.nom_gremi)}>Unir-se</CenteredButton>
                   </li>
                 ))}
               </ul>
@@ -224,7 +224,7 @@ export default function Guild() {
                 <li key={index}>{member.correu}</li>
               ))}
             </ul>
-            <CenteredButton onClick={handleLeaveGuild}>Dejar Gremio</CenteredButton>
+            <CenteredButton onClick={handleLeaveGuild}>Deixar el Gremi</CenteredButton>
           </div>
         )}
       </Layout>
