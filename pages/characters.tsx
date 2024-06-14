@@ -17,9 +17,9 @@ const fetcher = async (url: string) => {
   });
   
   if (!response.ok) {
-      // Token no válido o no proporcionado
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+    // Token no válido o no proporcionado
+    localStorage.removeItem('token');
+    window.location.href = '/login';
   }
   
   return response.json();

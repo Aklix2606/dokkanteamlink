@@ -17,6 +17,27 @@ export async function getJugadorByEmail(req, res) {
         res.status(500).json({ error: 'Error retrieving jugador' });
     }
 }
+export async function deleteJugador(req, res) {
+    const { userId } = req;
+
+    try {
+        await pool.query('DELETE FROM practica.componen WHERE nomequip IN (SELECT nomequip FROM practica.equip WHERE correu = $1)', [userId]);
+        await pool.query('DELETE FROM practica.personatgeinvocat WHERE correu = $1', [userId]);
+        await pool.query('DELETE FROM practica.equip WHERE correu = $1', [userId]);
+
+        const query = 'DELETE FROM practica.jugador WHERE correu = $1';
+        const { rowCount } = await pool.query(query, [userId]);
+
+        if (rowCount === 0) {
+            return res.status(404).json({ error: 'Jugador no encontrado' });
+        }
+
+        res.json({ message: 'Jugador eliminado correctamente' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error eliminando el jugador' });
+    }
+}
 
 export async function updateJugador(req, res) {
     const { correu } = req.params;
@@ -67,23 +88,6 @@ export async function postJugador(req, res) {
 }
 
 
-export async function deleteJugador(req, res) {
-    const { correu } = req.params;
-
-    try {
-        const query = 'DELETE FROM practica.jugador WHERE correu = $1';
-        const { rowCount } = await pool.query(query, [correu]);
-
-        if (rowCount === 0) {
-            return res.status(404).json({ error: 'Jugador not found' });
-        }
-
-        res.json({ message: 'Jugador deleted successfully' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Error deleting jugador' });
-    }
-}
 
 export async function updateJugadorGremi(req, res) {
     const correu = req.params.correu;

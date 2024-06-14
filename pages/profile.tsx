@@ -21,7 +21,7 @@ const ProfilePage: React.FC = () => {
   const handlePasswordChange = async (e: FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      setError('Les contrasenyes no coincideixen');
+      setError('Les contransenyes  no coincideixen');
       return;
     }
 
@@ -38,17 +38,42 @@ const ProfilePage: React.FC = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Error al cambiar la contraseña');
+        throw new Error(errorData.error || 'Error al canviar la contrasenya');
       }
 
       setError(null);
       alert('Contrasenya canviada correctament');
-      window.location.reload()
+      window.location.reload();
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (error) {
-      console.error('Error changing password:', error);
+      console.error('Error al canviar la contrasenya:', error);
+      setError(error.message);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/jugadors', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al eliminar el compte');
+      }
+
+      alert('Compte eliminat');
+      logout();
+      router.push('/login'); // Redirige a la página de inicio de sesión
+    } catch (error) {
+      console.error('Error al eliminar el compte:', error);
       setError(error.message);
     }
   };
@@ -69,7 +94,7 @@ const ProfilePage: React.FC = () => {
             </Typography>
             <Box component="form" onSubmit={handlePasswordChange} sx={{ mt: 2 }}>
               <Typography variant="h6" gutterBottom>
-                Cambiar Contrasenya
+                Canviar Contrasenya
               </Typography>
               {error && <Typography color="error">{error}</Typography>}
               <TextField
@@ -81,7 +106,7 @@ const ProfilePage: React.FC = () => {
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 InputLabelProps={{
-                  style: { color: '#007BFF' }, 
+                  style: { color: '#007BFF' },
                 }}
                 InputProps={{
                   style: { color: '#000', backgroundColor: '#FFF' },
@@ -109,7 +134,7 @@ const ProfilePage: React.FC = () => {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 InputLabelProps={{
-                  style: { color: '#007BFF' }, 
+                  style: { color: '#007BFF' },
                 }}
                 InputProps={{
                   style: { color: '#000', backgroundColor: '#FFF' },
@@ -173,7 +198,16 @@ const ProfilePage: React.FC = () => {
                 fullWidth
                 onClick={handleLogout}
               >
-                Tancar sessió
+                Tancar Sessió
+              </Button>
+              <Button
+                variant="contained"
+                color="error"
+                fullWidth
+                sx={{ mt: 4 }}
+                onClick={handleDeleteAccount}
+              >
+                Eliminar Compte
               </Button>
             </Box>
           </Box>

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Personatge, Personatgeinvocat, Objecte } from '../backend/models/models';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import { styled } from '@mui/system';
+import { mutate } from 'swr';
 
 const StyledButton = styled(Button)({
     backgroundColor: '#f0f0f0',
@@ -18,7 +19,7 @@ const StyledButton = styled(Button)({
 });
 
 const CharacterStatsContainer = styled('div')({
-  color: '#000', // Cambiar el color del texto a negro
+    color: '#000',
 });
 
 type CharacterListProps = {
@@ -33,7 +34,7 @@ const CharacterList: React.FC<CharacterListProps> = ({ characters }) => {
     const [showObjectSelector, setShowObjectSelector] = useState(false);
     const [objecteData, setObjecteData] = useState<Objecte | null>(null);
 
-    const token = localStorage.getItem('token'); // Suponiendo que el token se guarda en localStorage
+    const token = localStorage.getItem('token');
 
     const handleCharacterClick = async (character: Personatgeinvocat) => {
         setSelectedCharacter(character);
@@ -73,7 +74,6 @@ const CharacterList: React.FC<CharacterListProps> = ({ characters }) => {
             });
             const data = await response.json();
             setAvailableObjects(data);
-            console.log('Available objects:', data);
         } catch (error) {
             console.error('Error fetching available objects:', error);
         }
@@ -92,7 +92,6 @@ const CharacterList: React.FC<CharacterListProps> = ({ characters }) => {
                 });
 
                 if (response.ok) {
-                    // Actualizar el estado local después de la asignación exitosa
                     setSelectedCharacter({ ...selectedCharacter, numobj });
                     const objecteResponse = await fetch(`/api/objecte/consulta/${numobj}`, {
                         headers: {
@@ -107,6 +106,32 @@ const CharacterList: React.FC<CharacterListProps> = ({ characters }) => {
                 }
             } catch (error) {
                 console.error('Error assigning object:', error);
+            }
+        }
+    };
+
+    const handleDeleteCharacter = async () => {
+        if (selectedCharacter) {
+            try {
+                const response = await fetch(`/api/personatgeinvocat/${selectedCharacter.nom}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    setSelectedCharacter(null);
+                    setCharacterStats(null);
+                    setObjecteData(null);
+                    // Refrescar la lista de personajes invocados y el conteo
+                    mutate('/api/personatgesinvocats');
+                    mutate('/api/personatgesinvocats/count');
+                } else {
+                    console.error('Error deleting character:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error deleting character:', error);
             }
         }
     };
@@ -132,11 +157,13 @@ const CharacterList: React.FC<CharacterListProps> = ({ characters }) => {
                 gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
                 gridGap: '20px',
             }}>
-                {characters.map((character) => (
-                    <StyledButton key={character.nom} onClick={() => handleCharacterClick(character)}>
-                        {character.nom}
-                    </StyledButton>
-                ))}
+                {characters
+                    .filter((character) => character.nom.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .map((character) => (
+                        <StyledButton key={character.nom} onClick={() => handleCharacterClick(character)}>
+                            {character.nom}
+                        </StyledButton>
+                    ))}
             </div>
             <Modal open={selectedCharacter !== null} onClose={handleCloseModal}>
                 <div style={{ padding: '20px', backgroundColor: 'white', borderRadius: '5px', maxWidth: '400px', margin: 'auto', marginTop: '100px' }}>
@@ -166,6 +193,7 @@ const CharacterList: React.FC<CharacterListProps> = ({ characters }) => {
                             {!objecteData && (
                                 <Button onClick={handleAddObject}>Afegir Objecte</Button>
                             )}
+                            <Button onClick={handleDeleteCharacter} color="error">Eliminar Personatge</Button>
                         </>
                     )}
                     <Button onClick={handleCloseModal}>Tancar</Button>

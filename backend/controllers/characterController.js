@@ -69,7 +69,24 @@ export async function assignObjectToCharacter(req, res) {
       res.status(500).json({ error: 'Internal server error' });
   }
 }
+export async function deleteInvokedCharacter(req, res) {
+  const correu = req.userId;
+  const { nom } = req.params;
 
+  try {
+      const deleteQuery = 'DELETE FROM practica.personatgeinvocat WHERE correu = $1 AND nom = $2';
+      const { rowCount } = await pool.query(deleteQuery, [correu, nom]);
+
+      if (rowCount === 0) {
+          return res.status(404).json({ error: 'Character not found or not associated with this user' });
+      }
+
+      res.status(200).json({ message: 'Character deleted successfully' });
+  } catch (error) {
+      console.error('Error deleting character:', error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+}
 
 /*import Character from '../models/Character.js';
 
